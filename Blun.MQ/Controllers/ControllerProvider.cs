@@ -75,7 +75,7 @@ namespace Blun.MQ.Controllers
         
         private static IEnumerable<MessageAttribute> LoadMessageAttributes(Type iMqController)
         {
-            foreach (MethodInfo methodInfo in iMqController.GetMethods(BindingFlags.Public))
+            foreach (MethodInfo methodInfo in iMqController.GetMethods())
             {
                 foreach (var attribute in methodInfo.GetCustomAttributes(false))
                 {

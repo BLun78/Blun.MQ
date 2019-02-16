@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Blun.MQ.Controllers;
 using Blun.MQ.Test.Demo;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +25,7 @@ namespace Blun.MQ.Test.Controller
         }
 
         [TestMethod]
-        public void ProviderGetControllerType()
+        public void ProviderGetControllerTypeOK()
         {
             // arrange
             var serviceCollection = new Mock<IServiceCollection>();
@@ -34,6 +36,21 @@ namespace Blun.MQ.Test.Controller
 
             // assert
             Assert.AreEqual(typeof(DemoController), type);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void ProviderGetControllerTypeExeption()
+        {
+            // arrange
+            var serviceCollection = new Mock<IServiceCollection>();
+            var provider = new ControllerProvider(serviceCollection.Object);
+            var key = Guid.NewGuid().ToString();
+
+            // act
+            var type = provider.GetControllerType(key);
+
+            // assert
         }
     }
 }
