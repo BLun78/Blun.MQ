@@ -9,14 +9,27 @@ namespace Blun.MQ.Controllers
 {
     internal sealed class ControllerProvider
     {
-        private readonly IServiceCollection serviceCollection;
+        private readonly ControllerFactory _controllerFactory;
 
         public IDictionary<string, Type> Controllers { get; private set; }
 
-        public ControllerProvider(IServiceCollection serviceCollection)
+        internal ControllerProvider(ControllerFactory controllerFactory)
         {
+            _controllerFactory = controllerFactory;
             this.Controllers = LoadControllers();
-            this.serviceCollection = serviceCollection;
+        }
+
+        /// <summary>
+        /// Get the Controller for the messagequeue request
+        /// </summary>
+        /// <param name="keyQueueMessage"></param>
+        /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
+        /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
+        /// <returns></returns>
+        internal IMQController GetController(string keyQueueMessage)
+        {
+            var type = GetControllerType(keyQueueMessage);
+            return this._controllerFactory.GetController(type);
         }
 
         internal Type GetControllerType(string keyQueueMessage)
@@ -24,6 +37,10 @@ namespace Blun.MQ.Controllers
             if (this.Controllers.ContainsKey(keyQueueMessage))
             {
                 return this.Controllers[keyQueueMessage];
+            }
+            if (!this.Controllers.Any())
+            {
+                throw new ControllerAreEmptyException();
             }
             throw new KeyNotFoundException($"Key [{keyQueueMessage}] does not exists!");
         }
@@ -72,7 +89,7 @@ namespace Blun.MQ.Controllers
                 }
             }
         }
-        
+
         private static IEnumerable<MessageAttribute> LoadMessageAttributes(Type iMqController)
         {
             foreach (MethodInfo methodInfo in iMqController.GetMethods())

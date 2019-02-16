@@ -15,10 +15,11 @@ namespace Blun.MQ.Test.Controller
         public void ProviderLoadController()
         {
             // arrange
-            var serviceCollection = new Mock<IServiceCollection>();
+            var serviceProvider = new Mock<IServiceProvider>();
+            var controllerFactory = new ControllerFactory(serviceProvider.Object);
 
             // act
-            var provider = new ControllerProvider(serviceCollection.Object);
+            var provider = new ControllerProvider(controllerFactory);
 
             // assert
             Assert.AreEqual(8, provider.Controllers.Count);
@@ -28,8 +29,9 @@ namespace Blun.MQ.Test.Controller
         public void ProviderGetControllerTypeOK()
         {
             // arrange
-            var serviceCollection = new Mock<IServiceCollection>();
-            var provider = new ControllerProvider(serviceCollection.Object);
+            var serviceProvider = new Mock<IServiceProvider>();
+            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var provider = new ControllerProvider(controllerFactory);
 
             // act
             var type = provider.GetControllerType("Demo.HelloWorld");
@@ -43,8 +45,9 @@ namespace Blun.MQ.Test.Controller
         public void ProviderGetControllerTypeExeption()
         {
             // arrange
-            var serviceCollection = new Mock<IServiceCollection>();
-            var provider = new ControllerProvider(serviceCollection.Object);
+            var serviceProvider = new Mock<IServiceProvider>();
+            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var provider = new ControllerProvider(controllerFactory);
             var key = Guid.NewGuid().ToString();
 
             // act
