@@ -1,21 +1,25 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Blun.MQ.Controller
+namespace Blun.MQ.Controllers
 {
     internal sealed class ControllerProvider
     {
+        private readonly IServiceCollection serviceCollection;
+
         public IDictionary<string, Type> Controllers { get; private set; }
 
-        public ControllerProvider()
+        public ControllerProvider(IServiceCollection serviceCollection)
         {
             this.Controllers = LoadControllers();
+            this.serviceCollection = serviceCollection;
         }
 
-        public Type GetControllerType(string keyQueueMessage)
+        internal Type GetControllerType(string keyQueueMessage)
         {
             if (this.Controllers.ContainsKey(keyQueueMessage))
             {
@@ -71,7 +75,7 @@ namespace Blun.MQ.Controller
         
         private static IEnumerable<MessageAttribute> LoadMessageAttributes(Type iMqController)
         {
-            foreach (MethodInfo methodInfo in iMqController.GetMethods())
+            foreach (MethodInfo methodInfo in iMqController.GetMethods(BindingFlags.Public))
             {
                 foreach (var attribute in methodInfo.GetCustomAttributes(false))
                 {

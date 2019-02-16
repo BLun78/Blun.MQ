@@ -1,8 +1,10 @@
-using Blun.MQ.Controller;
+using Blun.MQ.Controllers;
 using Blun.MQ.Test.Demo;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
-namespace Blun.MQ.Test
+namespace Blun.MQ.Test.Controller
 {
     [TestClass]
     public class UnitTestControllerProvider
@@ -11,19 +13,21 @@ namespace Blun.MQ.Test
         public void ProviderLoadController()
         {
             // arrange
-            
+            var serviceCollection = new Mock<IServiceCollection>();
+
             // act
-            var provider = new ControllerProvider();
+            var provider = new ControllerProvider(serviceCollection.Object);
 
             // assert
-            Assert.AreEqual(8,provider.Controllers.Count);
+            Assert.AreEqual(8, provider.Controllers.Count);
         }
 
         [TestMethod]
         public void ProviderGetControllerType()
         {
             // arrange
-            var provider = new ControllerProvider();
+            var serviceCollection = new Mock<IServiceCollection>();
+            var provider = new ControllerProvider(serviceCollection.Object);
 
             // act
             var type = provider.GetControllerType("Demo.HelloWorld");

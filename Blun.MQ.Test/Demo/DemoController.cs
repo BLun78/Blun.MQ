@@ -35,5 +35,12 @@ namespace Blun.MQ.Test.Demo
             _logger.LogTrace($"HelloWorldAsync Message: {result}");
             return Task.FromResult(result);
         }
+
+        [Message("BugMethodNotFindInProvider")]
+        [Message("BugMethodNotFindInProvider2")]
+        private string BugMethodNotFindInProvider(string hello)
+        {
+            return "";
+        }
     }
 }

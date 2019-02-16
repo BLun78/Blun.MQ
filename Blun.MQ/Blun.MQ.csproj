@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Blun.MQ.Abstractions\Blun.MQ.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Clients\" />
+  </ItemGroup>
+
 </Project>
