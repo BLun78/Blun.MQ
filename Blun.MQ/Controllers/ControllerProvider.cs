@@ -58,19 +58,24 @@ namespace Blun.MQ.Controllers
                 {
                     if (!type.GetInterfaces().Contains(typeof(IMQController))) continue;
 
-                    var (queues, messages) = LoadMqAttributes(type);
-                    foreach (var queue in queues)
-                    {
-                        foreach (var messageAttribute in messages)
-                        {
-                            var key = $"{queue.QueueName}.{messageAttribute.MessageName}";
-                            controllers.Add(key, type);
-                        }
-                    }
+                    AddController(type, controllers);
                 }
             }
 
             return controllers;
+        }
+
+        private static void AddController(Type iMqController, IDictionary<string, Type> controllers)
+        {
+            var (queues, messages) = LoadMqAttributes(iMqController);
+            foreach (var queue in queues)
+            {
+                foreach (var messageAttribute in messages)
+                {
+                    var key = $"{queue.QueueName}.{messageAttribute.MessageName}";
+                    controllers.Add(key, iMqController);
+                }
+            }
         }
 
         private static (IEnumerable<QueueAttribute> queue, IEnumerable<MessageAttribute> messages) LoadMqAttributes(Type iMqController)
