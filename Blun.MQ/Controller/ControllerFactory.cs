@@ -1,4 +1,4 @@
-﻿namespace Blun.MQ
+﻿namespace Blun.MQ.Controller
 {
     internal sealed class ControllerFactory
     {

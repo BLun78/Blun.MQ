@@ -6,11 +6,11 @@ namespace Blun.MQ
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
     public sealed class MessageAttribute :  Attribute
     {
-        private readonly string _messageName;
+        public string MessageName { get; }
 
         public MessageAttribute(string messageName)
         {
-            _messageName = messageName;
+            MessageName = messageName;
         }
     }
 }

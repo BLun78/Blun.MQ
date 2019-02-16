@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Blun.MQ
 {
-    public class Boostrapper
+    internal class Boostrapper
     {
         private readonly IServiceCollection _serviceCollection;
         private IClientProxy[] clientProxies;

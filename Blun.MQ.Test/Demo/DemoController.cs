@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Blun.MQ.Test.Demo
 {
     [Queue("Demo")]
+    [Queue("Demo2")]
     public class DemoController : MQController
     {
         private ILogger<DemoController> _logger;
@@ -18,6 +19,7 @@ namespace Blun.MQ.Test.Demo
         }
 
         [Message("HelloWorld")]
+        [Message("HelloWorld2")]
         public string HelloWorld(string hello)
         {
             var result = $"Hello {hello}!";
@@ -26,6 +28,7 @@ namespace Blun.MQ.Test.Demo
         }
 
         [Message("HelloWorldAsync")]
+        [Message("HelloWorld2Async")]
         public Task<string> HelloWorldAsync(string hello)
         {
             var result = $"Hello {hello}!";
