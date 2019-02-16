@@ -25,15 +25,21 @@ namespace Blun.MQ.AwsSQS
             }
         }
 
-        public async Task<string> SendAsync<T>(T message, string channel)
+        public async Task<string> SendAsync<T>(T message, string queue)
         {
             var request = new SendMessageRequest();
-            request.QueueUrl = _amazonSqsConfig.ServiceURL + channel;
+            request.QueueUrl = _amazonSqsConfig.ServiceURL + queue;
             request.MessageBody = JsonConvert.SerializeObject(message);
             
             SendMessageResponse result = await _amazonSqsClient.SendMessageAsync(request);
 
             return result.MessageId;
+        }
+
+        public Task<string> RegisterQueue(string queue)
+        {
+
+            return Task.FromResult("");
         }
 
         public void Connect()

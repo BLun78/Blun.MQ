@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Blun.MQ</AssemblyName>
-    <RootNamespace>Blun.MQ</RootNamespace>
+    <AssemblyName>Blun.MQ.Abstractions</AssemblyName>
+    <RootNamespace>Blun.MQ.Abstractions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

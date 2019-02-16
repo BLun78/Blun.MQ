@@ -8,6 +8,7 @@ namespace Blun.MQ.Test
         [TestMethod]
         public void TestMethod1()
         {
+
         }
     }
 }
