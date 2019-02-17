@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Blun.MQ.Controllers;
+using Blun.MQ.Hosting;
 using Blun.MQ.Test.Demo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +19,7 @@ namespace Blun.MQ.Test.Controller
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
 
             // act
-            var provider = new ControllerProvider(controllerFactory);
+            var provider = new ControllerProvider(controllerFactory, new QueueManager());
 
             // assert
             Assert.AreEqual(8, provider.Controllers.Count);
@@ -31,7 +31,7 @@ namespace Blun.MQ.Test.Controller
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
-            var provider = new ControllerProvider(controllerFactory);
+            var provider = new ControllerProvider(controllerFactory, new QueueManager());
 
             // act
             var type = provider.GetControllerType("Demo.HelloWorld");
@@ -47,7 +47,7 @@ namespace Blun.MQ.Test.Controller
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
-            var provider = new ControllerProvider(controllerFactory);
+            var provider = new ControllerProvider(controllerFactory, new QueueManager());
             var key = Guid.NewGuid().ToString();
 
             // act

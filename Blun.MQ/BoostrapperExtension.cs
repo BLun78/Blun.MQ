@@ -1,4 +1,4 @@
-﻿using Blun.MQ.Controllers;
+﻿using Blun.MQ.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blun.MQ

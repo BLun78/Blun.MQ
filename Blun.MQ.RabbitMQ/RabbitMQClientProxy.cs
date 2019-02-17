@@ -25,6 +25,11 @@ namespace Blun.MQ.RabbitMQ
             }
         }
 
+        public void Setup()
+        {
+
+        }
+
         public Task<string> SendAsync<T>(T message, string channel)
         {
             byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));

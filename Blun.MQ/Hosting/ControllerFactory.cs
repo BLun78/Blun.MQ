@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Blun.MQ.Controllers
+namespace Blun.MQ.Hosting
 {
     internal sealed class ControllerFactory
     {
