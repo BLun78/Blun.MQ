@@ -4,13 +4,13 @@ using System.Data.SqlTypes;
 namespace Blun.MQ
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-    public sealed class MessageAttribute :  Attribute
+    public sealed class MessagePatternAttribute :  Attribute
     {
-        public string MessageName { get; }
+        public string MessagePattern { get; }
 
-        public MessageAttribute(string messageName)
+        public MessagePatternAttribute(string MessagePattern)
         {
-            MessageName = messageName;
+            this.MessagePattern = MessagePattern;
         }
     }
 }

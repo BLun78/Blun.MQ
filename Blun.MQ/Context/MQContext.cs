@@ -2,7 +2,7 @@
 {
     public class MQContext
     {
-        public MQRequest Request { get; set; }
-        public MQResponse Response { get; set; }
+        public MQRequest Request { get; internal set; }
+        public MQResponse Response { get; internal set; }
     }
 }

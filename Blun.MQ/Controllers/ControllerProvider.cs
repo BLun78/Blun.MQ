@@ -72,13 +72,13 @@ namespace Blun.MQ.Controllers
             {
                 foreach (var messageAttribute in messages)
                 {
-                    var key = $"{queue.QueueName}.{messageAttribute.MessageName}";
+                    var key = $"{queue.QueueName}.{messageAttribute.MessagePattern}";
                     controllers.Add(key, iMqController);
                 }
             }
         }
 
-        private static (IEnumerable<QueueAttribute> queue, IEnumerable<MessageAttribute> messages) LoadMqAttributes(Type iMqController)
+        private static (IEnumerable<QueueAttribute> queue, IEnumerable<MessagePatternAttribute> messages) LoadMqAttributes(Type iMqController)
         {
             return (LoadQueueAttribute(iMqController), LoadMessageAttributes(iMqController));
         }
@@ -95,13 +95,13 @@ namespace Blun.MQ.Controllers
             }
         }
 
-        private static IEnumerable<MessageAttribute> LoadMessageAttributes(Type iMqController)
+        private static IEnumerable<MessagePatternAttribute> LoadMessageAttributes(Type iMqController)
         {
             foreach (MethodInfo methodInfo in iMqController.GetMethods())
             {
                 foreach (var attribute in methodInfo.GetCustomAttributes(false))
                 {
-                    if (attribute is MessageAttribute message)
+                    if (attribute is MessagePatternAttribute message)
                     {
                         yield return message;
                     }

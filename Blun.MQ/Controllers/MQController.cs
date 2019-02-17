@@ -7,8 +7,14 @@ namespace Blun.MQ
 {
     public abstract class MQController : IMQController
     {
-        protected MQContext Context { get; }
+        internal MQContext MQContext;
 
+        protected MQContext Context => MQContext;
 
+        protected MQController()
+        {
+
+        }
+                
     }
 }

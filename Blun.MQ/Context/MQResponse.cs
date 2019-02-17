@@ -8,6 +8,6 @@ namespace Blun.MQ.Context
 
     public class MQResponse
     {
-        public Message Message { get; set; }
+        public Message Message { get; internal set; }
     }
 }

@@ -6,8 +6,8 @@ namespace Blun.MQ.Messages
 {
     public class Message
     {
-        public Header Header { get; set; }
+        public Header Header { get; internal set; }
 
-        public Body Body { get; set; }
+        public Body Body { get; internal set; }
     }
 }

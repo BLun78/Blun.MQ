@@ -18,8 +18,8 @@ namespace Blun.MQ.Test.Demo
             _logger.LogTrace("Ctor: DemoController is created!");
         }
 
-        [Message("HelloWorld")]
-        [Message("HelloWorld2")]
+        [MessagePattern("HelloWorld")]
+        [MessagePattern("HelloWorld2")]
         public string HelloWorld(string hello)
         {
             var result = $"Hello {hello}!";
@@ -27,8 +27,8 @@ namespace Blun.MQ.Test.Demo
             return result;
         }
 
-        [Message("HelloWorldAsync")]
-        [Message("HelloWorld2Async")]
+        [MessagePattern("HelloWorldAsync")]
+        [MessagePattern("HelloWorld2Async")]
         public Task<string> HelloWorldAsync(string hello)
         {
             var result = $"Hello {hello}!";
@@ -36,8 +36,8 @@ namespace Blun.MQ.Test.Demo
             return Task.FromResult(result);
         }
 
-        [Message("BugMethodNotFindInProvider")]
-        [Message("BugMethodNotFindInProvider2")]
+        [MessagePattern("BugMethodNotFindInProvider")]
+        [MessagePattern("BugMethodNotFindInProvider2")]
         private string BugMethodNotFindInProvider(string hello)
         {
             return "";
