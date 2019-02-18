@@ -9,13 +9,12 @@ namespace Blun.MQ.Hosting
         private readonly ControllerFactory _controllerFactory;
         private readonly QueueManager _queueManager;
 
-        public IDictionary<string, Type> Controllers { get; private set; }
+        public IDictionary<string, Type> Controllers => QueueManager.Controllers;
 
         internal ControllerProvider(ControllerFactory controllerFactory, QueueManager queueManager)
         {
             _controllerFactory = controllerFactory;
             _queueManager = queueManager;
-            this.Controllers = QueueManager.LoadControllers();
         }
 
         /// <summary>

@@ -7,7 +7,11 @@ namespace Blun.MQ.Hosting
 {
     internal sealed class QueueManager
     {
-        public static IDictionary<string, Type> LoadControllers()
+        public static IDictionary<string, Type> Controllers { get; private set; } = LoadControllers();
+        public static List<string> Queues { get; private set; } = new List<string>();
+
+
+        private static IDictionary<string, Type> LoadControllers()
         {
             var controllers = new Dictionary<string, Type>();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -35,6 +39,7 @@ namespace Blun.MQ.Hosting
                 foreach (var messageAttribute in messages)
                 {
                     var key = $"{queue.QueueName}.{messageAttribute.MessagePattern}";
+                    Queues.Add(queue.QueueName);
                     controllers.Add(key, iMqController);
                 }
             }
