@@ -14,6 +14,10 @@ namespace Blun.MQ.Hosting
         {
             _controllerProvider = controllerProvider;
         }
-        
+
+        public object InvokeMethod()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

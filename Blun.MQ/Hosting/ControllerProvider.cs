@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blun.MQ.Exceptions;
 
 namespace Blun.MQ.Hosting
 {

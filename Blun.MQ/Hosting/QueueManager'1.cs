@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
+using Blun.MQ.Exceptions;
 
 namespace Blun.MQ.Hosting
 {
@@ -9,10 +11,10 @@ namespace Blun.MQ.Hosting
     {
         internal static IDictionary<string, MessageDefinition> FindControllerByKey { get; private set; } = LoadControllers();
         internal static List<MessageDefinition> MessageDefinitions { get; private set; } = new List<MessageDefinition>();
-        
+
         private static IDictionary<string, MessageDefinition> LoadControllers()
         {
-            var controllers = new Dictionary<string, MessageDefinition>();
+            var controllers = new SortedDictionary<string, MessageDefinition>(StringComparer.Ordinal);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var types = assembly.GetTypes().Where(x =>
@@ -35,7 +37,14 @@ namespace Blun.MQ.Hosting
             var messageDefinitions = LoadMqDefinition(iMqController);
             foreach (var definition in messageDefinitions)
             {
+                try
+                {
                     controllers.Add(definition.Key, definition);
+                }
+                catch (ArgumentException ae)
+                {
+                    throw new DuplicateKeyException($"The key [{definition.Key}] is duplicated in the FindControllerByKey dictionary!", ae);
+                }
             }
         }
 
@@ -66,7 +75,7 @@ namespace Blun.MQ.Hosting
                 }
             }
         }
-        
+
         private static IEnumerable<QueueAttribute> LoadQueueAttribute(MemberInfo iMqController)
         {
             IEnumerable<Attribute> attributes = iMqController.GetCustomAttributes().Where(x => x is QueueAttribute);
