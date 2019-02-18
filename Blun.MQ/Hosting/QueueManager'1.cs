@@ -7,12 +7,12 @@ namespace Blun.MQ.Hosting
 {
     internal sealed partial class QueueManager
     {
-        internal static IDictionary<string, Type> Controllers { get; private set; } = LoadControllers();
-        internal static List<string> Queues { get; private set; } = new List<string>();
+        internal static IDictionary<string, MessageDefinition> FindControllerByKey { get; private set; } = LoadControllers();
+        internal static List<MessageDefinition> MessageDefinitions { get; private set; } = new List<MessageDefinition>();
         
-        private static IDictionary<string, Type> LoadControllers()
+        private static IDictionary<string, MessageDefinition> LoadControllers()
         {
-            var controllers = new Dictionary<string, Type>();
+            var controllers = new Dictionary<string, MessageDefinition>();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var types = assembly.GetTypes().Where(x =>
@@ -30,25 +30,43 @@ namespace Blun.MQ.Hosting
             return controllers;
         }
 
-        private static void AddController(Type iMqController, IDictionary<string, Type> controllers)
+        private static void AddController(Type iMqController, IDictionary<string, MessageDefinition> controllers)
         {
-            var (queues, messages) = LoadMqAttributes(iMqController);
-            foreach (var queue in queues)
+            var messageDefinitions = LoadMqDefinition(iMqController);
+            foreach (var definition in messageDefinitions)
             {
-                foreach (var messageAttribute in messages)
-                {
-                    var key = $"{queue.QueueName}.{messageAttribute.MessagePattern}";
-                    Queues.Add(queue.QueueName);
-                    controllers.Add(key, iMqController);
-                }
+                    controllers.Add(definition.Key, definition);
             }
         }
 
-        private static (IEnumerable<QueueAttribute> queue, IEnumerable<MessagePatternAttribute> messages) LoadMqAttributes(Type iMqController)
+        private static IEnumerable<MessageDefinition> LoadMqDefinition(Type iMqController)
         {
-            return (LoadQueueAttribute(iMqController), LoadMessageAttributes(iMqController));
+            var queues = LoadQueueAttribute(iMqController);
+            return LoadMessagAttributes(iMqController, queues);
         }
 
+        private static IEnumerable<MessageDefinition> LoadMessagAttributes(Type iMqController, IEnumerable<QueueAttribute> queueAttributes)
+        {
+            foreach (var methodInfo in iMqController.GetMethods())
+            {
+                foreach (var attribute in methodInfo.GetCustomAttributes(false))
+                {
+                    if (!(attribute is MessagePatternAttribute message)) continue;
+
+                    foreach (var queueAttribute in queueAttributes)
+                    {
+                        yield return new MessageDefinition()
+                        {
+                            MethodInfo = methodInfo,
+                            Queue = queueAttribute,
+                            MessagePattern = message,
+                            ControllerType = iMqController
+                        };
+                    }
+                }
+            }
+        }
+        
         private static IEnumerable<QueueAttribute> LoadQueueAttribute(MemberInfo iMqController)
         {
             IEnumerable<Attribute> attributes = iMqController.GetCustomAttributes().Where(x => x is QueueAttribute);
@@ -57,20 +75,6 @@ namespace Blun.MQ.Hosting
                 if (attribute is QueueAttribute queue)
                 {
                     yield return queue;
-                }
-            }
-        }
-
-        private static IEnumerable<MessagePatternAttribute> LoadMessageAttributes(Type iMqController)
-        {
-            foreach (MethodInfo methodInfo in iMqController.GetMethods())
-            {
-                foreach (var attribute in methodInfo.GetCustomAttributes(false))
-                {
-                    if (attribute is MessagePatternAttribute message)
-                    {
-                        yield return message;
-                    }
                 }
             }
         }

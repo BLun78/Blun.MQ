@@ -1,13 +1,16 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Blun.MQ.Hosting
 {
-    public class MessageDefinition
+    internal class MessageDefinition
     {
+        public string Key => $"{this.QueueName}.{this.MessagePatternName}";
         public string QueueName => this.Queue.QueueName;
-        internal QueueAttribute Queue { get; set; }
+        public QueueAttribute Queue { get; internal set; }
+        public Type ControllerType { get; internal set; }
         public string MessagePatternName => this.MessagePattern.MessagePattern;
-        internal MessagePatternAttribute MessagePattern { get; set; }
+        public MessagePatternAttribute MessagePattern { get; internal set; }
         public MethodInfo MethodInfo { get; internal set; }
     }
 }   

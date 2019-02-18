@@ -7,14 +7,12 @@ namespace Blun.MQ.Hosting
     internal sealed class ControllerProvider
     {
         private readonly ControllerFactory _controllerFactory;
-        private readonly QueueManager _queueManager;
 
-        public IDictionary<string, Type> Controllers => QueueManager.Controllers;
+        public IDictionary<string, MessageDefinition> Controllers => QueueManager.FindControllerByKey;
 
-        internal ControllerProvider(ControllerFactory controllerFactory, QueueManager queueManager)
+        internal ControllerProvider(ControllerFactory controllerFactory)
         {
             _controllerFactory = controllerFactory;
-            _queueManager = queueManager;
         }
 
         /// <summary>
@@ -34,7 +32,12 @@ namespace Blun.MQ.Hosting
         {
             if (this.Controllers.ContainsKey(keyQueueMessage))
             {
-                return this.Controllers[keyQueueMessage];
+                var messageDefinition = this.Controllers[keyQueueMessage];
+                if (messageDefinition == null)
+                {
+                    throw new NullReferenceException($"Key [{keyQueueMessage}] return null!");
+                }
+                return this.Controllers[keyQueueMessage].ControllerType;
             }
             if (!this.Controllers.Any())
             {
