@@ -8,7 +8,7 @@ namespace Blun.MQ
     internal class Boostrapper
     {
         private readonly IServiceCollection _serviceCollection;
-        private IClientProxy[] clientProxies;
+       
 
 
         public Boostrapper()
