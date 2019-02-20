@@ -10,29 +10,36 @@ namespace Blun.MQ.AwsSQS
 {
     internal class AwsSQSClientProxy : ClientProxy, IClientProxy
     {
-        private AmazonSQSClient _amazonSqsClient;
-        private readonly AmazonSQSConfig _amazonSqsConfig;
-        private readonly List<QueueuHandle> _queueHandles;
+        private readonly IDictionary<string, QueueHandle> _queueHandles;
 
         public AwsSQSClientProxy()
         {
-            _queueHandles = new List<QueueuHandle>();
-            _amazonSqsConfig = new AmazonSQSConfig();
+            _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
         
         public override async Task<string> SendAsync<T>(T message, string queue)
         {
-            var request = new SendMessageRequest(_amazonSqsConfig.ServiceURL + queue,
-                JsonConvert.SerializeObject(message));
+            var handle = GetQueueHandle(queue);
 
-            SendMessageResponse result = await _amazonSqsClient.SendMessageAsync(request);
+            var result = await handle.SendAsync(message, queue);
 
             return result.MessageId;
         }
-        
+
+        private QueueHandle GetQueueHandle(string queue)
+        {
+            if (!_queueHandles.ContainsKey(queue))
+            {
+                throw new KeyNotFoundException($"QueueHandle not found [{queue}]");
+            }
+
+            var handle = _queueHandles[queue];
+            return handle;
+        }
+
         public override void Connect()
         {
-            _amazonSqsClient = new AmazonSQSClient(_amazonSqsConfig);
+            
         }
 
         public override void Disconnect()
@@ -42,12 +49,15 @@ namespace Blun.MQ.AwsSQS
 
         public override void SetupQueueHandle(IEnumerable<string> queues)
         {
-            throw new NotImplementedException();
+            foreach (var queue in queues)
+            {
+                _queueHandles.Add(queue, new QueueHandle(queue));
+            }
         }
 
         public override void Dispose()
         {
-            _amazonSqsClient?.Dispose();
+
         }
 
     }
