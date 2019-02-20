@@ -5,22 +5,25 @@ using System.Threading.Tasks;
 using Blun.MQ.Abstractions;
 namespace Blun.MQ.Hosting
 {
-    internal class Host : IAsyncDisposable
+    internal class Host : IDisposable
     {
-        private readonly IClientProxy[] _clientProxies;
+        private readonly IEnumerable<IClientProxy> _clientProxies;
         private readonly QueueManager _queueManager;
 
-        public Host(IClientProxy[] allClientProxies,
+        public Host(IEnumerable<IClientProxy> allClientProxies,
             QueueManager queueManager)
         {
-            this._clientProxies = allClientProxies;
-            this._queueManager = queueManager;
+            _clientProxies = allClientProxies;
+            _queueManager = queueManager;
+            _queueManager.SetupQueueHandle(_clientProxies);
         }
         
-
-        public Task DisposeAsync()
+        public void Dispose()
         {
-            throw new NotImplementedException();
+            foreach (IClientProxy clientProxy in _clientProxies)
+            {
+                clientProxy.Dispose();
+            }
         }
     }
 }

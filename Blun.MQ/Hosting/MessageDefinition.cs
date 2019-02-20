@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Reflection;
+using Blun.MQ.Abstractions;
 
 namespace Blun.MQ.Hosting
 {
-    internal class MessageDefinition
+
+    internal class MessageDefinition : IMessageDefinition
     {
         public string Key => $"{this.QueueName}.{this.MessagePatternName}";
         public string QueueName => this.Queue.QueueName;

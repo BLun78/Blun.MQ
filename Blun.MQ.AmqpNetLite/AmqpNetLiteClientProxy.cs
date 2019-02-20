@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Amqp;
 using Blun.MQ;
 
 namespace Blun.MQ.AmqpNetLite
 {
-    public class AmqpNetLiteClientProxy : IClientProxy
+    public class AmqpNetLiteClientProxy : ClientProxy, IClientProxy
     {
         private Connection _connection;
         private Session _session;
@@ -16,23 +18,23 @@ namespace Blun.MQ.AmqpNetLite
             _adresse =new Address("amqp://guest:guest@localhost:5672");
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Disconnect();
         }
 
-        public Task<string> SendAsync<T>(T message, string channel)
+        public override Task<string> SendAsync<T>(T message, string channel)
         {
             throw new NotImplementedException();
         }
 
-        public void Connect()
+        public override void Connect()
         {
             _connection = new Connection(_adresse);
             _session = new Session(_connection);
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
             if (!_session.IsClosed)
             {
@@ -42,6 +44,11 @@ namespace Blun.MQ.AmqpNetLite
             {
                 _connection.Close();
             }
+        }
+
+        public override void SetupQueueHandle(IEnumerable<string> queues)
+        {
+            throw new NotImplementedException();
         }
     }
 }

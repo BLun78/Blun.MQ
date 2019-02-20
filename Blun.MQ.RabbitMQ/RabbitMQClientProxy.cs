@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blun.MQ;
+using Blun.MQ.Abstractions;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 
 namespace Blun.MQ.RabbitMQ
 {
-    public class RabbitMQClientProxy : IClientProxy
+    public class RabbitMqClientProxy : ClientProxy, IClientProxy
     {
         private readonly ConnectionFactory _connectionFactory;
         private IConnection _connection;
         private IModel _channel;
 
-        public RabbitMQClientProxy()
+        public RabbitMqClientProxy()
         {
             _connectionFactory = new ConnectionFactory();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (_connection != null)
             {
@@ -25,12 +27,7 @@ namespace Blun.MQ.RabbitMQ
             }
         }
 
-        public void Setup()
-        {
-
-        }
-
-        public Task<string> SendAsync<T>(T message, string channel)
+        public override Task<string> SendAsync<T>(T message, string channel)
         {
             byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
@@ -39,13 +36,13 @@ namespace Blun.MQ.RabbitMQ
             return Task.FromResult("");
         }
 
-        public void Connect()
+        public override void Connect()
         {
             _connection = _connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
             if (_channel != null && _channel.IsOpen)
             {
@@ -55,6 +52,11 @@ namespace Blun.MQ.RabbitMQ
             {
                 _connection.Close();
             }
+        }
+
+        public override void SetupQueueHandle(IEnumerable<string> queues)
+        {
+            throw new NotImplementedException();
         }
     }
 }
