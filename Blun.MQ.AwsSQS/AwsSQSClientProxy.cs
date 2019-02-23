@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace Blun.MQ.AwsSQS
 {
+    // ReSharper disable once InconsistentNaming
     internal class AwsSQSClientProxy : ClientProxy, IClientProxy
     {
         private readonly IDictionary<string, QueueHandle> _queueHandles;
@@ -21,7 +22,7 @@ namespace Blun.MQ.AwsSQS
         {
             var handle = GetQueueHandle(queue);
 
-            var result = await handle.SendAsync(message, queue);
+            var result = await handle.SendAsync(message).ConfigureAwait(false);
 
             return result.MessageId;
         }
@@ -51,7 +52,7 @@ namespace Blun.MQ.AwsSQS
         {
             foreach (var queue in queues)
             {
-                _queueHandles.Add(queue, new QueueHandle(queue, OnReceiveMessageFromQueueEventArgs()));
+                _queueHandles.Add(queue, new QueueHandle(queue,));
             }
         }
         

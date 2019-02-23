@@ -21,10 +21,7 @@ namespace Blun.MQ.RabbitMQ
 
         public override void Dispose()
         {
-            if (_connection != null)
-            {
-                _connection.Dispose();
-            }
+            _connection?.Dispose();
         }
 
         public override Task<string> SendAsync<T>(T message, string channel)

@@ -2,9 +2,11 @@
 
 namespace Blun.MQ.AwsSQS
 {
-    public static class SQSExtension
+    // ReSharper disable once InconsistentNaming
+    public static class AwsSQSExtension
     {
-        public static void addAwsSQSAdapter(this IServiceCollection serviceCollection)
+        // ReSharper disable once InconsistentNaming
+        public static void AddAwsSQSAdapter(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<AwsSQSClientProxy>();
         }

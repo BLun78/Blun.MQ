@@ -10,7 +10,7 @@ namespace Blun.MQ.Test.Demo
     [Queue("Demo2")]
     public class DemoController : MQController
     {
-        private ILogger<DemoController> _logger;
+        private readonly ILogger<DemoController> _logger;
 
         public DemoController(ILoggerFactory loggerFactory)
         {

@@ -12,13 +12,35 @@ namespace Blun.MQ.Example
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            try
+            {
+                Console.WriteLine("Starting web host");
+                BuildWebHost(args).Run();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Host terminated unexpectedly");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.Source);
+                Console.ReadLine();
+                return 1;
+            }
+            finally
+            {
+               // Do some thing after close
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            CreateWebHostBuilder(args)
+                .Build();
     }
 }

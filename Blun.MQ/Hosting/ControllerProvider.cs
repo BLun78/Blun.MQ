@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Blun.MQ.Exceptions;
+using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting
 {
@@ -9,9 +10,9 @@ namespace Blun.MQ.Hosting
     {
         private readonly ControllerFactory _controllerFactory;
 
-        public IDictionary<string, MessageDefinition> Controllers => QueueManager.FindControllerByKey;
+        public IDictionary<string, MessageDefinition> Controllers { get; } = QueueManager.FindControllerByKey;
 
-        internal ControllerProvider(ControllerFactory controllerFactory)
+        internal ControllerProvider([NotNull] ControllerFactory controllerFactory)
         {
             _controllerFactory = controllerFactory;
         }

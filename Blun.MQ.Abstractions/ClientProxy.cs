@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
 namespace Blun.MQ
 {
-    public abstract class ClientProxy : IClientProxy
+#pragma warning disable CA1063 // Implement IDisposable Correctly
+    public abstract class ClientProxy : IClientProxy, IDisposable
+
     {
         public abstract void Dispose();
 
@@ -22,4 +25,5 @@ namespace Blun.MQ
 
         public abstract void SetupQueueHandle(IEnumerable<string> queues);
     }
+#pragma warning restore CA1063 // Implement IDisposable Correctly
 }
