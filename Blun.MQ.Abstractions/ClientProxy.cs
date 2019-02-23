@@ -12,7 +12,7 @@ namespace Blun.MQ
         public abstract void Dispose();
 
         public event EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
-        public virtual void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
+        protected void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
         {
             MessageFromQueueReceived?.Invoke(this, e);
         }

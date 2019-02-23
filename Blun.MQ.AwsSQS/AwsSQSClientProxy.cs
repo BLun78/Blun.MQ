@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Blun.MQ;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Blun.MQ.AwsSQS
@@ -11,10 +12,14 @@ namespace Blun.MQ.AwsSQS
     // ReSharper disable once InconsistentNaming
     internal class AwsSQSClientProxy : ClientProxy, IClientProxy
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IDictionary<string, QueueHandle> _queueHandles;
+        private readonly ILogger<AwsSQSClientProxy> _logger;
 
-        public AwsSQSClientProxy()
+        public AwsSQSClientProxy(ILoggerFactory loggerFactory)
         {
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<AwsSQSClientProxy>();
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
 
@@ -52,14 +57,22 @@ namespace Blun.MQ.AwsSQS
         {
             foreach (var queue in queues)
             {
-                _queueHandles.Add(queue, new QueueHandle(queue,));
+                var newQueueHandle = new QueueHandle(queue, _loggerFactory);
+                newQueueHandle.MessageFromQueueReceived += OnMessageFromQueueReceived;
+                _queueHandles.Add(queue, newQueueHandle);
             }
         }
-        
+
+        private void OnMessageFromQueueReceived(object sender, ReceiveMessageFromQueueEventArgs e)
+        {
+            OnReceiveMessageFromQueueEventArgs(e);
+        }
+
         public override void Dispose()
         {
 
         }
 
+       
     }
 }

@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Blun.MQ.Messages;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Blun.MQ.AwsSQS
 {
-    internal class QueueHandle: IDisposable
+    internal sealed class QueueHandle: IDisposable
     {
         public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
         public bool IsListening;
@@ -19,14 +20,14 @@ namespace Blun.MQ.AwsSQS
         private AmazonSQSClient _amazonSqsClient;
         private readonly AmazonSQSConfig _amazonSqsConfig;
         
-        public QueueHandle(string queueName)
+        public QueueHandle(string queueName, ILoggerFactory loggerFactory)
         {
             _queueName = queueName;
             IsListening = false;
             _amazonSqsConfig = new AmazonSQSConfig();
         }
 
-        public virtual void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
+        public void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
         {
             MessageFromQueueReceived?.Invoke(this, e);
         }
@@ -51,8 +52,6 @@ namespace Blun.MQ.AwsSQS
             }, cancellationToken);
 
             IsListening = true;
-
-            OnReceiveMessageFromQueueEventArgs(null);
         }
 
         private async Task ListenLoop(CancellationToken cancellationToken)
