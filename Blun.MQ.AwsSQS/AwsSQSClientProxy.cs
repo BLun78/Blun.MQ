@@ -16,7 +16,7 @@ namespace Blun.MQ.AwsSQS
         {
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
-        
+
         public override async Task<string> SendAsync<T>(T message, string queue)
         {
             var handle = GetQueueHandle(queue);
@@ -39,7 +39,7 @@ namespace Blun.MQ.AwsSQS
 
         public override void Connect()
         {
-            
+
         }
 
         public override void Disconnect()
@@ -51,10 +51,10 @@ namespace Blun.MQ.AwsSQS
         {
             foreach (var queue in queues)
             {
-                _queueHandles.Add(queue, new QueueHandle(queue));
+                _queueHandles.Add(queue, new QueueHandle(queue, OnReceiveMessageFromQueueEventArgs()));
             }
         }
-
+        
         public override void Dispose()
         {
 

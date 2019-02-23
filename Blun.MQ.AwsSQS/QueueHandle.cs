@@ -11,12 +11,14 @@ namespace Blun.MQ.AwsSQS
     internal class QueueHandle
     {
         private readonly string _queueName;
+        private readonly EventHandler<ReceiveMessageFromQueueEventArgs> _eventHandler;
         private AmazonSQSClient _amazonSqsClient;
         private readonly AmazonSQSConfig _amazonSqsConfig;
         
-        public QueueHandle(string queueName)
+        public QueueHandle(string queueName, EventHandler<ReceiveMessageFromQueueEventArgs> eventHandler)
         {
             _queueName = queueName;
+            _eventHandler = eventHandler;
             _amazonSqsConfig = new AmazonSQSConfig();
         }
 
