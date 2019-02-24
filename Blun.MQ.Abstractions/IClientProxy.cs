@@ -8,7 +8,7 @@ namespace Blun.MQ
     {
         event EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
 
-        Task<string> SendAsync<T>(T message, string channel);
+        Task<string> SendAsync<T>(T message, MQRequest request);
 
         void Connect();
 
