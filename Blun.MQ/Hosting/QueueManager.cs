@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blun.MQ.Context;
+using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting
 {
@@ -12,6 +14,7 @@ namespace Blun.MQ.Hosting
     {
         private readonly ControllerProvider _controllerProvider;
         private IEnumerable<IClientProxy> _clientProxies;
+        private CancellationToken _cancellationToken;
 
         public QueueManager(ControllerProvider controllerProvider)
         {
@@ -20,6 +23,7 @@ namespace Blun.MQ.Hosting
 
         public void SetupQueueHandle(IEnumerable<IClientProxy> clientProxies, CancellationToken cancellationToken)
         {
+            _cancellationToken = cancellationToken;
             _clientProxies = clientProxies;
             foreach (var clientProxy in _clientProxies)
             {
@@ -27,13 +31,21 @@ namespace Blun.MQ.Hosting
                 clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
             }
         }
-
-        private void ClientProxyOnMessageFromQueueReceived(object sender, ReceiveMessageFromQueueEventArgs e)
+        public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
-        private IDictionary<string, IEnumerable<IMessageDefinition>> CreateQueueDictionary()
+        private void ClientProxyOnMessageFromQueueReceived(object sender, [NotNull] ReceiveMessageFromQueueEventArgs e)
+        {
+            if (_cancellationToken == null) throw new InvalidOperationException("SetupQueueHandle() wasn't run!");
+            _ = Task.Run( () =>
+            {
+                var controller = _controllerProvider.GetController(e);
+
+            }, _cancellationToken);
+        }
+
+        private static IDictionary<string, IEnumerable<IMessageDefinition>> CreateQueueDictionary()
         {
             var result = new SortedDictionary<string, IEnumerable<IMessageDefinition>>();
             var queueNames = MessageDefinitions
@@ -52,8 +64,5 @@ namespace Blun.MQ.Hosting
             return result;
         }
 
-        public void Dispose()
-        {
-        }
     }
 }

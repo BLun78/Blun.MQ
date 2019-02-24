@@ -1,4 +1,5 @@
-﻿using Blun.MQ.Hosting;
+﻿using Blun.MQ.Context;
+using Blun.MQ.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,7 +13,7 @@ namespace Blun.MQ
             serviceCollection.AddSingleton<ControllerProvider>();
             serviceCollection.AddSingleton<QueueManager>();
             serviceCollection.AddSingleton<Host>();
-
+            serviceCollection.AddSingleton<MQContextFactory>();
         }
 
         public static void UseMq(this IApplicationBuilder applicationBuilder)

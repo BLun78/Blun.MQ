@@ -10,13 +10,15 @@ namespace Blun.MQ.Hosting
     internal sealed class ControllerProvider
     {
         private readonly ControllerFactory _controllerFactory;
+        private readonly MQContextFactory _mqContextFactory;
 
         [NotNull]
         public IDictionary<string, MessageDefinition> Controllers { get; } = QueueManager.FindControllerByKey;
 
-        internal ControllerProvider([NotNull] ControllerFactory controllerFactory)
+        internal ControllerProvider([NotNull] ControllerFactory controllerFactory, MQContextFactory mqContextFactory)
         {
             _controllerFactory = controllerFactory;
+            _mqContextFactory = mqContextFactory;
         }
 
         /// <summary>
@@ -27,10 +29,11 @@ namespace Blun.MQ.Hosting
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
         [CanBeNull]
-        internal MQController GetController([NotNull] string keyQueueMessage, [NotNull] MQContext mqContext)
+        internal MQController GetController([NotNull] IMessageDefinition messageDefinition)
         {
-            var type = GetControllerType(keyQueueMessage);
-            return this._controllerFactory.GetController(type, mqContext);
+            var context = _mqContextFactory.CreateContext(messageDefinition);
+            var type = GetControllerType(messageDefinition.Key);
+            return this._controllerFactory.GetController(type, context);
         }
 
         [NotNull]
