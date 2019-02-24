@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Blun.MQ.Abstractions;
 using Blun.MQ.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Blun.MQ.AwsSQS
 {
-    internal sealed class QueueHandle: IDisposable
+    internal sealed class QueueHandle: IDisposable, IAsyncDisposable
     {
         public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
         public bool IsListening;
@@ -151,6 +153,11 @@ namespace Blun.MQ.AwsSQS
         public void Dispose()
         {
             _amazonSqsClient?.Dispose();
+        }
+
+        public Task DisposeAsync([Optional] CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
