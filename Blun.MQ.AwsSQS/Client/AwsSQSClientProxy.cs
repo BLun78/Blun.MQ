@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amazon.SQS;
-using Amazon.SQS.Model;
-using Blun.MQ;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
-namespace Blun.MQ.AwsSQS
+namespace Blun.MQ.AwsSQS.Client
 {
     // ReSharper disable once InconsistentNaming
     internal class AwsSQSClientProxy : ClientProxy, IClientProxy

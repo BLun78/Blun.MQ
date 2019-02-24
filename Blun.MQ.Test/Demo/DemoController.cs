@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Test.Demo
 {
-    [Queue("Demo")]
-    [Queue("Demo2")]
+    [QueueRouting("Demo")]
+    [QueueRouting("Demo2")]
     public class DemoController : MQController
     {
         private readonly ILogger<DemoController> _logger;

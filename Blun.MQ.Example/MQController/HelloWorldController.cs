@@ -9,7 +9,7 @@ using Blun.MQ.Messages;
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ.Example.MQControllers
 {
-    [Queue("HelloWorld")]
+    [QueueRouting("HelloWorld")]
     public class HelloWorldController : MQController
     {
         [MessagePattern("HelloWorld1")]

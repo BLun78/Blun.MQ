@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Blun.MQ.Abstractions;
-using Blun.MQ.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Blun.MQ.AwsSQS
+namespace Blun.MQ.AwsSQS.Client
 {
     internal sealed class QueueHandle: IDisposable, IAsyncDisposable
     {
