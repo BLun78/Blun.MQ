@@ -1,45 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using Blun.MQ.Abstractions;
 using Blun.MQ.Context;
 using Blun.MQ.Messages;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Message = Blun.MQ.Messages.Message;
 
 namespace Blun.MQ.AwsSQS.Client
 {
-    internal sealed class QueueHandle : IDisposable, IAsyncDisposable
+    internal sealed class QueueHandle : IDisposable
     {
         public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
         public bool IsListening;
 
         private readonly string _queueName;
-        private AmazonSQSClient _amazonSqsClient;
+        private readonly IEnumerable<IMessageDefinition> _messageDefinitions;
+        private readonly CancellationToken _cancellationToken;
+        private readonly AmazonSQSClient _amazonSqsClient;
         private readonly AmazonSQSConfig _amazonSqsConfig;
+        private readonly ILogger<QueueHandle> _logger;
 
-        public QueueHandle(string queueName, ILoggerFactory loggerFactory)
+        public QueueHandle([NotNull, ItemNotNull]IEnumerable<IMessageDefinition> messageDefinitions,
+            [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] CancellationToken cancellationToken)
         {
-            _queueName = queueName;
+            _logger = loggerFactory.CreateLogger<QueueHandle>();
+            _messageDefinitions = messageDefinitions;
+            _queueName = messageDefinitions.First().QueueName;
+            _cancellationToken = cancellationToken;
             IsListening = false;
             _amazonSqsConfig = new AmazonSQSConfig();
+            _amazonSqsClient = new AmazonSQSClient(_amazonSqsConfig);
         }
-
-        public void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
-        {
-            MessageFromQueueReceived?.Invoke(this, e);
-        }
-
+        
         public async Task<MQResponse> SendAsync(MQRequest mqRequest)
         {
             var sqsRequest = new SendMessageRequest($"{_amazonSqsConfig.ServiceURL}{_queueName}",
                 JsonConvert.SerializeObject(mqRequest.Message));
 
-            var result = await _amazonSqsClient.SendMessageAsync(sqsRequest).ConfigureAwait(false);
+            var result = await _amazonSqsClient.SendMessageAsync(sqsRequest, _cancellationToken).ConfigureAwait(false);
 
             return new MQResponse
             {
@@ -48,30 +54,45 @@ namespace Blun.MQ.AwsSQS.Client
             };
         }
 
-        public void StartLongPollingForResponse(CancellationToken cancellationToken)
+        public void CreateQueueListener()
+        {
+            StartLongPollingForResponse();
+        }
+        
+        public void Dispose()
+        {
+            _amazonSqsClient?.Dispose();
+        }
+
+        private void StartLongPollingForResponse()
         {
             _ = Task.Run(async () =>
             {
-                await this.ListenLoop(cancellationToken).ConfigureAwait(false);
+                await this.ListenLoop().ConfigureAwait(false);
                 IsListening = false;
 
-            }, cancellationToken);
+            }, _cancellationToken);
 
             IsListening = true;
         }
 
-        private async Task ListenLoop(CancellationToken cancellationToken)
+        private void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            MessageFromQueueReceived?.Invoke(this, e);
+        }
+
+        private async Task ListenLoop()
+        {
+            while (!_cancellationToken.IsCancellationRequested)
             {
                 ReceiveMessageResponse sqsMessageResponse = null;
 
                 try
                 {
-                    sqsMessageResponse = await GetMessages(cancellationToken).ConfigureAwait(false);
+                    sqsMessageResponse = await GetMessages().ConfigureAwait(false);
                     var messageCount = sqsMessageResponse.Messages.Count;
                 }
-                catch (OperationCanceledException ex)
+                catch (OperationCanceledException oce)
                 {
 
                 }
@@ -86,7 +107,7 @@ namespace Blun.MQ.AwsSQS.Client
                     {
                         foreach (var message in sqsMessageResponse.Messages)
                         {
-                            if (cancellationToken.IsCancellationRequested)
+                            if (_cancellationToken.IsCancellationRequested)
                             {
                                 return;
                             }
@@ -102,7 +123,7 @@ namespace Blun.MQ.AwsSQS.Client
             }
         }
 
-        private async Task<ReceiveMessageResponse> GetMessages(CancellationToken cancellationToken)
+        private async Task<ReceiveMessageResponse> GetMessages()
         {
             var request = new ReceiveMessageRequest
             {
@@ -117,7 +138,7 @@ namespace Blun.MQ.AwsSQS.Client
 
                 try
                 {
-                    using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, receiveTimeout.Token))
+                    using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationToken, receiveTimeout.Token))
                     {
                         sqsMessageResponse = await _amazonSqsClient.ReceiveMessageAsync(request, linkedCts.Token)
                             .ConfigureAwait(false);
@@ -140,6 +161,7 @@ namespace Blun.MQ.AwsSQS.Client
             var messageEvent = new ReceiveMessageFromQueueEventArgs
             {
                 QueueName = _queueName,
+                MessageName = message.ReceiptHandle,
                 Message = new Messages.Message(
                     message.MessageId,
                     message.Attributes,
@@ -148,20 +170,6 @@ namespace Blun.MQ.AwsSQS.Client
 
             OnReceiveMessageFromQueueEventArgs(messageEvent);
         }
-
-        public void Connect()
-        {
-            _amazonSqsClient = new AmazonSQSClient(_amazonSqsConfig);
-        }
-
-        public void Dispose()
-        {
-            _amazonSqsClient?.Dispose();
-        }
-
-        public Task DisposeAsync([Optional] CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

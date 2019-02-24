@@ -9,6 +9,8 @@ namespace Blun.MQ
     {
         public string QueueName { get; set; }
 
+        public string MessageName { get; set; }
+
         public Message  Message { get; set; }
 
 

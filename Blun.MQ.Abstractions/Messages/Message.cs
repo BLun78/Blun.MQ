@@ -10,6 +10,8 @@ namespace Blun.MQ.Messages
     public class Message
     {
         public string MessageId { get; internal set; }
+
+        public string MessageName { get; internal set; }
         
         public IDictionary<string, string> Headers { get; internal set; }
 
@@ -20,7 +22,7 @@ namespace Blun.MQ.Messages
             Headers = new SortedDictionary<string, string>(StringComparer.Ordinal);
         }
 
-        internal Message(string messageId) : base()
+        internal Message(string messageId) : this()
         {
             this.MessageId = messageId;
         }

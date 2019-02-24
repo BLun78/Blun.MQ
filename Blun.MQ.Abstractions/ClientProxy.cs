@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Context;
 using Blun.MQ.Messages;
@@ -21,12 +22,9 @@ namespace Blun.MQ
         }
 
         public abstract Task<MQResponse> SendAsync(MQRequest request);
+        
+        public abstract void SetupQueueHandle(IEnumerable<string> queues, CancellationToken cancellationToken);
 
-        public abstract void Connect();
-
-        public abstract void Disconnect();
-
-        public abstract void SetupQueueHandle(IEnumerable<string> queues);
     }
 #pragma warning restore CA1063 // Implement IDisposable Correctly
 }
