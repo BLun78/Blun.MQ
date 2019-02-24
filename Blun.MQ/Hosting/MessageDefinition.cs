@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Blun.MQ.Abstractions;
 
 namespace Blun.MQ.Hosting
 {

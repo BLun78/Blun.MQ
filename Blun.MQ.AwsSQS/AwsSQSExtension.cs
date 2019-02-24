@@ -10,6 +10,7 @@ namespace Blun.MQ.AwsSQS
         public static void AddAwsSQSAdapter(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<AwsSQSClientProxy>();
+            serviceCollection.AddTransient<QueueHandle>(provider => );
         }
     }
 }
