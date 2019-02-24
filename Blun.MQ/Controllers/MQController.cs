@@ -3,10 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+// ReSharper disable once CheckNamespace
 namespace Blun.MQ
 {
-    public abstract class MQController : IMQController
+    // ReSharper disable once InconsistentNaming
+    public abstract class MQController
     {
+        // ReSharper disable once InconsistentNaming
         internal MQContext MQContext;
 
         protected MQContext Context => MQContext;

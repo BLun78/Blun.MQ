@@ -1,4 +1,6 @@
 ﻿using System;
+using Blun.MQ.Context;
+using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting
 {
@@ -6,14 +8,16 @@ namespace Blun.MQ.Hosting
     {
         private readonly IServiceProvider _serviceProvider;
 
-        internal ControllerFactory(IServiceProvider serviceProvider)
+        internal ControllerFactory([NotNull] IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        internal IMQController GetController(Type type) 
+        internal MQController GetController([NotNull] Type type, [NotNull] MQContext mqContext) 
         {
-            return this._serviceProvider.GetService(type) as IMQController;
+            if (!(this._serviceProvider.GetService(type) is MQController controller)) return null;
+            controller.MQContext = mqContext;
+            return controller;
         }
     }
 }

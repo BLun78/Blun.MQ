@@ -18,12 +18,11 @@ namespace Blun.MQ.Hosting
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var types = assembly.GetTypes().Where(x =>
-                    x.Assembly.FullName != Assembly.GetAssembly(typeof(IMQController)).FullName &&
                     x.Assembly.FullName != Assembly.GetAssembly(typeof(MQController)).FullName);
 
                 foreach (var type in types)
                 {
-                    if (!type.GetInterfaces().Contains(typeof(IMQController))) continue;
+                    if (!type.GetInterfaces().Contains(typeof(MQController))) continue;
 
                     AddController(type, controllers);
                 }

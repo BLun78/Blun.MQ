@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Blun.MQ.Context;
 using Blun.MQ.Hosting;
 using Blun.MQ.Test.Demo;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace Blun.MQ.Test.Controller
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
 
             // act
-            var controller = controllerFactory.GetController(typeof(DemoController));
+            var controller = controllerFactory.GetController(typeof(DemoController), new MQContext());
 
             // assert
             Assert.AreEqual(typeof(DemoController), controller.GetType());

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blun.MQ.Context;
 using Blun.MQ.Exceptions;
 using JetBrains.Annotations;
 
@@ -24,13 +25,13 @@ namespace Blun.MQ.Hosting
         /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
-        internal IMQController GetController(string keyQueueMessage)
+        internal MQController GetController([NotNull] string keyQueueMessage, [NotNull] MQContext mqContext)
         {
             var type = GetControllerType(keyQueueMessage);
-            return this._controllerFactory.GetController(type);
+            return this._controllerFactory.GetController(type, mqContext);
         }
 
-        internal Type GetControllerType(string keyQueueMessage)
+        internal Type GetControllerType([NotNull] string keyQueueMessage)
         {
             if (this.Controllers.ContainsKey(keyQueueMessage))
             {
