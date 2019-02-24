@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Blun.MQ.AwsSQS.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blun.MQ.AwsSQS
 {
