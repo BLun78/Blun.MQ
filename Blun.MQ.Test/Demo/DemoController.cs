@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Test.Demo
@@ -18,8 +19,9 @@ namespace Blun.MQ.Test.Demo
             _logger.LogTrace("Ctor: DemoController is created!");
         }
 
-        [MessagePattern("HelloWorld")]
-        [MessagePattern("HelloWorld2")]
+        [UsedImplicitly]
+        [MessageRoute("HelloWorld")]
+        [MessageRoute("HelloWorld2")]
         public string HelloWorld(string hello)
         {
             var result = $"Hello {hello}!";
@@ -27,8 +29,9 @@ namespace Blun.MQ.Test.Demo
             return result;
         }
 
-        [MessagePattern("HelloWorldAsync")]
-        [MessagePattern("HelloWorld2Async")]
+        [UsedImplicitly]
+        [MessageRoute("HelloWorldAsync")]
+        [MessageRoute("HelloWorld2Async")]
         public Task<string> HelloWorldAsync(string hello)
         {
             var result = $"Hello {hello}!";
@@ -36,8 +39,9 @@ namespace Blun.MQ.Test.Demo
             return Task.FromResult(result);
         }
 
-        [MessagePattern("BugMethodNotFindInProvider")]
-        [MessagePattern("BugMethodNotFindInProvider2")]
+        [UsedImplicitly]
+        [MessageRoute("BugMethodNotFindInProvider")]
+        [MessageRoute("BugMethodNotFindInProvider2")]
         private string BugMethodNotFindInProvider(string hello)
         {
             return "";

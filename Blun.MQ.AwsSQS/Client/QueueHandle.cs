@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Blun.MQ.Abstractions;
+using Blun.MQ.Context;
+using Blun.MQ.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Message = Blun.MQ.Messages.Message;
 
 namespace Blun.MQ.AwsSQS.Client
 {
-    internal sealed class QueueHandle: IDisposable, IAsyncDisposable
+    internal sealed class QueueHandle : IDisposable, IAsyncDisposable
     {
         public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
         public bool IsListening;
@@ -18,7 +21,7 @@ namespace Blun.MQ.AwsSQS.Client
         private readonly string _queueName;
         private AmazonSQSClient _amazonSqsClient;
         private readonly AmazonSQSConfig _amazonSqsConfig;
-        
+
         public QueueHandle(string queueName, ILoggerFactory loggerFactory)
         {
             _queueName = queueName;
@@ -30,15 +33,19 @@ namespace Blun.MQ.AwsSQS.Client
         {
             MessageFromQueueReceived?.Invoke(this, e);
         }
-        
-        public async Task<SendMessageResponse> SendAsync<T>(T message)
+
+        public async Task<MQResponse> SendAsync(MQRequest mqRequest)
         {
-            var request = new SendMessageRequest(_amazonSqsConfig.ServiceURL + _queueName,
-                JsonConvert.SerializeObject(message));
+            var sqsRequest = new SendMessageRequest($"{_amazonSqsConfig.ServiceURL}{_queueName}",
+                JsonConvert.SerializeObject(mqRequest.Message));
 
-            var result = await _amazonSqsClient.SendMessageAsync(request).ConfigureAwait(false);
+            var result = await _amazonSqsClient.SendMessageAsync(sqsRequest).ConfigureAwait(false);
 
-            return result;
+            return new MQResponse
+            {
+                HttpStatusCode = result.HttpStatusCode,
+                Message = new Message(result.MessageId)
+            };
         }
 
         public void StartLongPollingForResponse(CancellationToken cancellationToken)
@@ -70,7 +77,7 @@ namespace Blun.MQ.AwsSQS.Client
                 }
                 catch (Exception e)
                 {
-                    
+
                 }
 
                 try
@@ -90,7 +97,7 @@ namespace Blun.MQ.AwsSQS.Client
                 }
                 catch (Exception ex)
                 {
-                   
+
                 }
             }
         }
@@ -99,7 +106,7 @@ namespace Blun.MQ.AwsSQS.Client
         {
             var request = new ReceiveMessageRequest
             {
-                QueueUrl = _amazonSqsConfig.ServiceURL+ this._queueName,
+                QueueUrl = _amazonSqsConfig.ServiceURL + this._queueName,
                 MaxNumberOfMessages = 200,
                 WaitTimeSeconds = 20,
             };
@@ -120,10 +127,10 @@ namespace Blun.MQ.AwsSQS.Client
                 {
                     if (receiveTimeout.Token.IsCancellationRequested)
                     {
-                       
+
                     }
                 }
-                
+
                 return sqsMessageResponse;
             }
         }

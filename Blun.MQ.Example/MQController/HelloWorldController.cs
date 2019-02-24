@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blun.MQ.Context;
 using Blun.MQ.Messages;
+using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ.Example.MQControllers
@@ -12,13 +13,15 @@ namespace Blun.MQ.Example.MQControllers
     [QueueRouting("HelloWorld")]
     public class HelloWorldController : MQController
     {
-        [MessagePattern("HelloWorld1")]
+        [UsedImplicitly]
+        [MessageRoute("HelloWorld1")]
         public Message HelloWorld1(Message message)
         {
             return null;
         }
 
-        [MessagePattern("HelloWorld2")]
+        [UsedImplicitly]
+        [MessageRoute("HelloWorld2")]
         public MQResponse HelloWorld2(MQRequest request)
         {
             return null;

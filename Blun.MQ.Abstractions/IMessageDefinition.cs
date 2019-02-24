@@ -9,6 +9,6 @@ namespace Blun.MQ.Abstractions
     {
         string Key { get; }
         string QueueName { get; }
-        string MessagePatternName { get; }
+        string MessageName { get; }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blun.MQ;
 using Blun.MQ.Abstractions;
+using Blun.MQ.Context;
+using Blun.MQ.Messages;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 
@@ -23,14 +25,14 @@ namespace Blun.MQ.RabbitMQ
         {
             _connection?.Dispose();
         }
-
-        public override Task<string> SendAsync<T>(T message, string channel)
+        
+        public override Task<MQResponse> SendAsync(MQRequest request)
         {
-            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request.Message));
 
-            _channel.BasicPublish(channel, "", null, messageBodyBytes);
-            
-            return Task.FromResult("");
+            _channel.BasicPublish(request.MessageRoute, "", null, messageBodyBytes);
+
+            return Task.FromResult((MQResponse)null);
         }
 
         public override void Connect()

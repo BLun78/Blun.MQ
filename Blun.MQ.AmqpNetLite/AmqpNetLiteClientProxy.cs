@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Amqp;
 using Blun.MQ;
+using Blun.MQ.Context;
+using Blun.MQ.Messages;
 
 namespace Blun.MQ.AmqpNetLite
 {
-    public class AmqpNetLiteClientProxy : ClientProxy, IClientProxy
+    internal sealed class AmqpNetLiteClientProxy : ClientProxy, IClientProxy
     {
         private Connection _connection;
         private Session _session;
@@ -22,8 +24,8 @@ namespace Blun.MQ.AmqpNetLite
         {
             Disconnect();
         }
-
-        public override Task<string> SendAsync<T>(T message, string channel)
+        
+        public override Task<MQResponse> SendAsync(MQRequest request)
         {
             throw new NotImplementedException();
         }

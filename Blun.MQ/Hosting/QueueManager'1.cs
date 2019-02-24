@@ -60,15 +60,15 @@ namespace Blun.MQ.Hosting
             {
                 foreach (var attribute in methodInfo.GetCustomAttributes(false))
                 {
-                    if (!(attribute is MessagePatternAttribute message)) continue;
+                    if (!(attribute is MessageRouteAttribute message)) continue;
 
                     foreach (var queueAttribute in queueAttributes)
                     {
                         yield return new MessageDefinition()
                         {
                             MethodInfo = methodInfo,
-                            Queue = queueAttribute,
-                            MessagePattern = message,
+                            QueueRouting = queueAttribute,
+                            MessageRoute = message,
                             ControllerType = iMqController
                         };
                     }

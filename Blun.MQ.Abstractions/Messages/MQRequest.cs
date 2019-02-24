@@ -8,9 +8,10 @@ namespace Blun.MQ.Messages
 
         public Message Message { get; internal set; }
 
-        public string Queue { get; internal set; }
+        public string QueueRoute { get; internal set; }
 
-        public string MessagePattern { get; internal set; }
+        public string MessageRoute { get; internal set; }
 
+        public long ContentLength { get; internal set; }
     }
 }

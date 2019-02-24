@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Blun.MQ.Context;
+using Blun.MQ.Messages;
 using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.AwsSQS.Client
@@ -18,16 +20,7 @@ namespace Blun.MQ.AwsSQS.Client
             _logger = loggerFactory.CreateLogger<AwsSQSClientProxy>();
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
-
-        public override async Task<string> SendAsync<T>(T message, string queue)
-        {
-            var handle = GetQueueHandle(queue);
-
-            var result = await handle.SendAsync(message).ConfigureAwait(false);
-
-            return result.MessageId;
-        }
-
+        
         private QueueHandle GetQueueHandle(string queue)
         {
             if (!_queueHandles.ContainsKey(queue))
@@ -37,6 +30,15 @@ namespace Blun.MQ.AwsSQS.Client
 
             var handle = _queueHandles[queue];
             return handle;
+        }
+
+        public override async Task<MQResponse> SendAsync(MQRequest mqRequest)
+        {
+            var handle = GetQueueHandle(mqRequest.QueueRoute);
+
+            var result = await handle.SendAsync(mqRequest).ConfigureAwait(false);
+
+            return result;
         }
 
         public override void Connect()
