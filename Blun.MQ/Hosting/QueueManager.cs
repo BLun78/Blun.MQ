@@ -23,13 +23,33 @@ namespace Blun.MQ.Hosting
             _clientProxies = clientProxies;
             foreach (var clientProxy in _clientProxies)
             {
-                clientProxy.SetupQueueHandle(MessageDefinitions
-                        .OrderBy(x => x.QueueName, StringComparer.Ordinal)
-                        .Select(x => x.QueueName)
-                        .Distinct(StringComparer.Ordinal),
-                    cancellationToken);
-
+                clientProxy.SetupQueueHandle(CreateQueueDictionary(), cancellationToken);
+                clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
             }
+        }
+
+        private void ClientProxyOnMessageFromQueueReceived(object sender, ReceiveMessageFromQueueEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IDictionary<string, IEnumerable<IMessageDefinition>> CreateQueueDictionary()
+        {
+            var result = new SortedDictionary<string, IEnumerable<IMessageDefinition>>();
+            var queueNames = MessageDefinitions
+                .OrderBy(o => o.QueueName, StringComparer.Ordinal)
+                .Select(s => s.QueueName)
+                .Distinct(StringComparer.Ordinal);
+
+            foreach (var queueName in queueNames)
+            {
+                var messageDefinitions = MessageDefinitions
+                    .Where(w => w.QueueName.Equals(queueName, StringComparison.Ordinal))
+                    .OrderBy(o => o.QueueName, StringComparer.Ordinal);
+                result.Add(queueName, messageDefinitions);
+            }
+
+            return result;
         }
 
         public void Dispose()

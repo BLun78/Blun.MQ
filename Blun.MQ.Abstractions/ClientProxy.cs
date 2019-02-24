@@ -22,8 +22,9 @@ namespace Blun.MQ
         }
 
         public abstract Task<MQResponse> SendAsync(MQRequest request);
-        
-        public abstract void SetupQueueHandle(IEnumerable<string> queues, CancellationToken cancellationToken);
+
+        public abstract void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
+            CancellationToken cancellationToken);
 
     }
 #pragma warning restore CA1063 // Implement IDisposable Correctly
