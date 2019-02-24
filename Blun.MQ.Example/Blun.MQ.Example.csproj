@@ -17,6 +17,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\Blun.MQ.AwsSQS\Blun.MQ.AwsSQS.csproj" />
     <ProjectReference Include="..\Blun.MQ\Blun.MQ.csproj" />
   </ItemGroup>
 

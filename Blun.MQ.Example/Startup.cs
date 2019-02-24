@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blun.MQ.AwsSQS;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,8 @@ namespace Blun.MQ.Example
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddMQ();
+            services.AddAwsSQSAdapter();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
