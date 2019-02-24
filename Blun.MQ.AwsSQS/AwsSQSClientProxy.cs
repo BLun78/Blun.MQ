@@ -70,7 +70,10 @@ namespace Blun.MQ.AwsSQS
 
         public override void Dispose()
         {
-
+            foreach (var queueHandle in _queueHandles)
+            {
+                queueHandle.Value?.Dispose();
+            }
         }
 
        

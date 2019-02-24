@@ -16,13 +16,13 @@ namespace Blun.MQ.Messages
 
         public Message()
         {
-            Headers = new SortedDictionary<string, string>();
+            Headers = new SortedDictionary<string, string>(StringComparer.Ordinal);
         }
 
         public Message(string messageId, IDictionary<string, string> headers, string body)
         {
             this.MessageId = messageId;
-            this.Headers = new SortedDictionary<string, string>(headers);
+            this.Headers = new SortedDictionary<string, string>(headers, StringComparer.Ordinal);
             this.Body = body;
         }
     }
