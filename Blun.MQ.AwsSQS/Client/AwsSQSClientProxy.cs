@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Context;
 using Blun.MQ.Messages;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.AwsSQS.Client
@@ -11,12 +12,15 @@ namespace Blun.MQ.AwsSQS.Client
     // ReSharper disable once InconsistentNaming
     internal class AwsSQSClientProxy : ClientProxy, IClientProxy
     {
+        private readonly AwsSQSClientDecorator _awsSqsClientDecorator;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IDictionary<string, QueueHandle> _queueHandles;
         private readonly ILogger<AwsSQSClientProxy> _logger;
 
-        public AwsSQSClientProxy(ILoggerFactory loggerFactory)
+        // ReSharper disable once InconsistentNaming
+        public AwsSQSClientProxy([NotNull] AwsSQSClientDecorator awsSQSClientDecorator, [NotNull] ILoggerFactory loggerFactory)
         {
+            _awsSqsClientDecorator = awsSQSClientDecorator;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<AwsSQSClientProxy>();
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
@@ -34,7 +38,7 @@ namespace Blun.MQ.AwsSQS.Client
         {
             foreach (var queue in queues)
             {
-                var newQueueHandle = new QueueHandle(queue, _loggerFactory, cancellationToken);
+                var newQueueHandle = new QueueHandle(queue, _awsSqsClientDecorator ,_loggerFactory, cancellationToken);
                 newQueueHandle.MessageFromQueueReceived += OnMessageFromQueueReceived;
                 newQueueHandle.CreateQueueListener();
                 _queueHandles.Add(queue, newQueueHandle);

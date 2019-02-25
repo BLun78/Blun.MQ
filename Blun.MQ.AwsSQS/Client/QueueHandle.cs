@@ -23,11 +23,11 @@ namespace Blun.MQ.AwsSQS.Client
         private readonly string _queueName;
         private readonly IEnumerable<IMessageDefinition> _messageDefinitions;
         private readonly CancellationToken _cancellationToken;
-        private readonly AmazonSQSClient _amazonSqsClient;
-        private readonly AmazonSQSConfig _amazonSqsConfig;
+        private readonly AwsSQSClientDecorator _amazonSqsClient;
         private readonly ILogger<QueueHandle> _logger;
 
         public QueueHandle([NotNull, ItemNotNull]IEnumerable<IMessageDefinition> messageDefinitions,
+            [NotNull] AwsSQSClientDecorator awsSQSClientDecorator,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] CancellationToken cancellationToken)
         {
@@ -36,15 +36,19 @@ namespace Blun.MQ.AwsSQS.Client
             _queueName = messageDefinitions.First().QueueName;
             _cancellationToken = cancellationToken;
             IsListening = false;
-            _amazonSqsConfig = new AmazonSQSConfig();
-            _amazonSqsClient = new AmazonSQSClient(_amazonSqsConfig);
+            _amazonSqsClient = awsSQSClientDecorator;
         }
         
         public async Task<MQResponse> SendAsync(MQRequest mqRequest)
         {
-            var sqsRequest = new SendMessageRequest($"{_amazonSqsConfig.ServiceURL}{_queueName}",
-                JsonConvert.SerializeObject(mqRequest.Message));
+            var stringMessage = JsonConvert.SerializeObject(mqRequest.Message);
 
+            var sqsRequest = new SendMessageRequest
+            {
+                MessageBody = stringMessage,
+                QueueUrl = CombineUriToString(_amazonSqsClient.Config.ServiceURL, _queueName)
+            };
+            
             var result = await _amazonSqsClient.SendMessageAsync(sqsRequest, _cancellationToken).ConfigureAwait(false);
 
             return new MQResponse
@@ -127,9 +131,10 @@ namespace Blun.MQ.AwsSQS.Client
         {
             var request = new ReceiveMessageRequest
             {
-                QueueUrl = _amazonSqsConfig.ServiceURL + this._queueName,
-                MaxNumberOfMessages = 200,
+                QueueUrl = CombineUriToString(_amazonSqsClient.Config.ServiceURL, _queueName),
+                MaxNumberOfMessages = 5,
                 WaitTimeSeconds = 20,
+                // VisibilityTimeout = 30 
             };
 
             using (var receiveTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(300)))
@@ -170,6 +175,9 @@ namespace Blun.MQ.AwsSQS.Client
 
             OnReceiveMessageFromQueueEventArgs(messageEvent);
         }
-        
+        private static string CombineUriToString(string baseUri, string relativeOrAbsoluteUri)
+        {
+            return new Uri(new Uri(baseUri), relativeOrAbsoluteUri).ToString();
+        }
     }
 }
