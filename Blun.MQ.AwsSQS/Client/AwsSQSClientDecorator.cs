@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.SharedInterfaces;
 using Amazon.SQS;
@@ -12,24 +13,21 @@ using Microsoft.Extensions.Options;
 namespace Blun.MQ.AwsSQS.Client
 {
     // ReSharper disable once InconsistentNaming
-    internal sealed class AwsSQSClientDecorator : IAmazonSQS,  ICoreAmazonSQS, IDisposable
+    internal sealed class AwsSQSClientDecorator : IAmazonSQS, IDisposable, ICoreAmazonSQS, IAmazonService
     {
         private readonly IOptionsMonitor<AwsSQSOptions> AwsSqsOptions;
         private readonly AmazonSQSClient _amazonSqsClient;
-        private readonly AmazonSQSConfig _amazonSqsConfig;
 
         public AwsSQSClientDecorator(IOptionsMonitor<AwsSQSOptions> awsSqsOptions)
         {
             AwsSqsOptions = awsSqsOptions;
             var options = awsSqsOptions.CurrentValue;
-            _amazonSqsConfig = new AmazonSQSConfig()
+            var amazonSqsConfig = new AmazonSQSConfig()
             {
-
+                RegionEndpoint = RegionEndpoint.GetBySystemName(options.RegionEndpointName)
             };
-            _amazonSqsClient = new AmazonSQSClient(new BasicAWSCredentials("","")
-            {
-                
-            } ,_amazonSqsConfig);
+            var credentials = new BasicAWSCredentials(options.AccessKey, options.SecretKey);
+            _amazonSqsClient = new AmazonSQSClient(credentials, amazonSqsConfig);
         }
 
         public void Dispose()
@@ -39,15 +37,15 @@ namespace Blun.MQ.AwsSQS.Client
 
         public Task<Dictionary<string, string>> GetAttributesAsync(string queueUrl)
         {
-            return ((ICoreAmazonSQS) _amazonSqsClient).GetAttributesAsync(queueUrl);
+            return ((ICoreAmazonSQS)_amazonSqsClient).GetAttributesAsync(queueUrl);
         }
 
         public Task SetAttributesAsync(string queueUrl, Dictionary<string, string> attributes)
         {
-            return ((ICoreAmazonSQS) _amazonSqsClient).SetAttributesAsync(queueUrl, attributes);
+            return ((ICoreAmazonSQS)_amazonSqsClient).SetAttributesAsync(queueUrl, attributes);
         }
 
-        public IClientConfig Config => ((IAmazonService) _amazonSqsClient).Config;
+        public IClientConfig Config => ((IAmazonService)_amazonSqsClient).Config;
 
         public Task<string> AuthorizeS3ToSendMessageAsync(string queueUrl, string bucket)
         {
