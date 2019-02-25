@@ -8,7 +8,7 @@ namespace Blun.MQ.Context
     // ReSharper disable once InconsistentNaming
     internal sealed class MQContextFactory
     {
-        public MQContext CreateContext(MessageDefinition messageDefinition)
+        public MQContext CreateContext(IMessageDefinition messageDefinition)
         {
             var context = new MQContext();
 

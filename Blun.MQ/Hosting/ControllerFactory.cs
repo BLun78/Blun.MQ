@@ -13,6 +13,7 @@ namespace Blun.MQ.Hosting
             _serviceProvider = serviceProvider;
         }
 
+        [CanBeNull]
         internal MQController GetController([NotNull] Type type, [NotNull] MQContext mqContext) 
         {
             if (!(this._serviceProvider.GetService(type) is MQController controller)) return null;

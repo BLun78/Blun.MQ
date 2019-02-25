@@ -25,7 +25,7 @@ namespace Blun.MQ.AwsSQS.Client
             _logger = loggerFactory.CreateLogger<AwsSQSClientProxy>();
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
-        
+
         public override async Task<MQResponse> SendAsync(MQRequest mqRequest)
         {
             var handle = GetQueueHandle(mqRequest.QueueRoute);
@@ -33,15 +33,15 @@ namespace Blun.MQ.AwsSQS.Client
             var result = await handle.SendAsync(mqRequest).ConfigureAwait(false);
             return result;
         }
-        
-        public override void SetupQueueHandle(IEnumerable<string> queues, CancellationToken cancellationToken)
+
+        public override void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages, CancellationToken cancellationToken)
         {
-            foreach (var queue in queues)
+            foreach (var queuesAndMessage in queuesAndMessages)
             {
-                var newQueueHandle = new QueueHandle(queue, _awsSqsClientDecorator ,_loggerFactory, cancellationToken);
+                var newQueueHandle = new QueueHandle(queuesAndMessage.Value, _awsSqsClientDecorator, _loggerFactory, cancellationToken);
                 newQueueHandle.MessageFromQueueReceived += OnMessageFromQueueReceived;
                 newQueueHandle.CreateQueueListener();
-                _queueHandles.Add(queue, newQueueHandle);
+                _queueHandles.Add(queuesAndMessage.Key, newQueueHandle);
             }
         }
 

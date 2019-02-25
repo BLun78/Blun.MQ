@@ -50,10 +50,10 @@ namespace Blun.MQ.Hosting
         private static IEnumerable<MessageDefinition> LoadMqDefinition(Type iMqController)
         {
             var queues = LoadQueueAttribute(iMqController);
-            return LoadMessagAttributes(iMqController, queues);
+            return LoadMessageAttributes(iMqController, queues);
         }
 
-        private static IEnumerable<MessageDefinition> LoadMessagAttributes(Type iMqController, IEnumerable<QueueRoutingAttribute> queueAttributes)
+        private static IEnumerable<MessageDefinition> LoadMessageAttributes(Type iMqController, IEnumerable<QueueRoutingAttribute> queueAttributes)
         {
             foreach (var methodInfo in iMqController.GetMethods())
             {
@@ -77,7 +77,7 @@ namespace Blun.MQ.Hosting
 
         private static IEnumerable<QueueRoutingAttribute> LoadQueueAttribute(MemberInfo iMqController)
         {
-            IEnumerable<Attribute> attributes = iMqController.GetCustomAttributes().Where(x => x is QueueRoutingAttribute);
+            var attributes = iMqController.GetCustomAttributes().Where(x => x is QueueRoutingAttribute);
             foreach (var attribute in attributes)
             {
                 if (attribute is QueueRoutingAttribute queue)

@@ -33,13 +33,13 @@ namespace Blun.MQ.AwsSQS.Client
         {
             _logger = loggerFactory.CreateLogger<QueueHandle>();
             _messageDefinitions = messageDefinitions;
-            _queueName = messageDefinitions.First().QueueName;
+            _queueName = _messageDefinitions.First().QueueName;
             _cancellationToken = cancellationToken;
             IsListening = false;
             _amazonSqsClient = awsSQSClientDecorator;
         }
         
-        public async Task<MQResponse> SendAsync(MQRequest mqRequest)
+        public async Task<MQResponse> SendAsync([NotNull] MQRequest mqRequest)
         {
             var stringMessage = JsonConvert.SerializeObject(mqRequest.Message);
 
