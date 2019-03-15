@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Blun.MQ.Context;
 using Blun.MQ.Messages;
 
 // ReSharper disable CheckNamespace
@@ -21,7 +20,7 @@ namespace Blun.MQ
             MessageFromQueueReceived?.Invoke(this, e);
         }
 
-        public abstract Task<MQResponse> SendAsync(MQRequest request);
+        public abstract Task<IMQResponse> SendAsync(IMQRequest request);
 
         public abstract void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
             CancellationToken cancellationToken);

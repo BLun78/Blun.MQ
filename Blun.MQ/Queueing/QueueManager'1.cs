@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using Blun.MQ.Exceptions;
 
-namespace Blun.MQ.Hosting
+namespace Blun.MQ.Queueing
 {
     internal sealed partial class QueueManager
     {
@@ -55,13 +54,16 @@ namespace Blun.MQ.Hosting
 
         private static IEnumerable<MessageDefinition> LoadMessageAttributes(Type iMqController, IEnumerable<QueueRoutingAttribute> queueAttributes)
         {
+            IEnumerable<QueueRoutingAttribute> queueRoutingAttributes = queueAttributes as QueueRoutingAttribute[] 
+                                                                        ?? queueAttributes.ToArray();
+
             foreach (var methodInfo in iMqController.GetMethods())
             {
                 foreach (var attribute in methodInfo.GetCustomAttributes(false))
                 {
                     if (!(attribute is MessageRouteAttribute message)) continue;
 
-                    foreach (var queueAttribute in queueAttributes)
+                    foreach (var queueAttribute in queueRoutingAttributes)
                     {
                         yield return new MessageDefinition()
                         {

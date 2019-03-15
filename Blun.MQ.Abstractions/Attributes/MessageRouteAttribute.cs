@@ -9,9 +9,9 @@ namespace Blun.MQ
     {
         public string MessagePattern { get; }
 
-        public MessageRouteAttribute(string MessagePattern)
+        public MessageRouteAttribute(string messagePattern)
         {
-            this.MessagePattern = MessagePattern;
+            this.MessagePattern = messagePattern;
         }
     }
 }

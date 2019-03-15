@@ -1,7 +1,7 @@
-﻿using Blun.MQ.Context;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Blun.MQ.Message;
 
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ

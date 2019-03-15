@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Blun.MQ.Context;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 
@@ -13,7 +12,7 @@ namespace Blun.MQ
     {
         event EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
 
-        Task<MQResponse> SendAsync(MQRequest request);
+        Task<IMQResponse> SendAsync(IMQRequest request);
         
 
         void SetupQueueHandle([NotNull, ItemNotNull] IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages,[NotNull] CancellationToken cancellationToken);

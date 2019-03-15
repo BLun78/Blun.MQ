@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Blun.MQ.Context;
 using Blun.MQ.Hosting;
+using Blun.MQ.Message;
 using Blun.MQ.Test.Demo;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

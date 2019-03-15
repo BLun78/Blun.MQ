@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Blun.MQ.Hosting;
-
-namespace Blun.MQ.Context
+﻿namespace Blun.MQ.Message
 {
     // ReSharper disable once InconsistentNaming
     internal sealed class MQContextFactory

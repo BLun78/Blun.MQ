@@ -1,7 +1,8 @@
-﻿using Blun.MQ.Context;
-using Blun.MQ.Hosting;
+﻿using Blun.MQ.Hosting;
+using Blun.MQ.Message;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using QueueManager = Blun.MQ.Queueing.QueueManager;
 
 namespace Blun.MQ
 {

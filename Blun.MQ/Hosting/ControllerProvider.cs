@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Blun.MQ.Context;
 using Blun.MQ.Exceptions;
+using Blun.MQ.Message;
+using Blun.MQ.Queueing;
 using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting
@@ -13,7 +14,7 @@ namespace Blun.MQ.Hosting
         private readonly MQContextFactory _mqContextFactory;
 
         [NotNull]
-        public IDictionary<string, MessageDefinition> Controllers { get; } = QueueManager.FindControllerByKey;
+        public IDictionary<string, MessageDefinition> Controllers { get; } = Queueing.QueueManager.FindControllerByKey;
 
         internal ControllerProvider([NotNull] ControllerFactory controllerFactory, MQContextFactory mqContextFactory)
         {

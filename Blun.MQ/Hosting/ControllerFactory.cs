@@ -1,5 +1,5 @@
 ﻿using System;
-using Blun.MQ.Context;
+using Blun.MQ.Message;
 using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting

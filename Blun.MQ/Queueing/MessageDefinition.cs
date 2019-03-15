@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Blun.MQ.Hosting
+namespace Blun.MQ.Queueing
 {
 
     internal class MessageDefinition : IMessageDefinition
