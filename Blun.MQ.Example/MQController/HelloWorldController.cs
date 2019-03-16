@@ -14,14 +14,14 @@ namespace Blun.MQ.Example.MQControllers
     {
         [UsedImplicitly]
         [MessageRoute("HelloWorld1")]
-        public Message HelloWorld1(Message message)
+        public Messages.Message HelloWorld1(Messages.Message message)
         {
             return null;
         }
 
         [UsedImplicitly]
         [MessageRoute("HelloWorld2")]
-        public MQResponse HelloWorld2(MQRequest request)
+        public IMQResponse HelloWorld2(IMQRequest request)
         {
             return null;
         }

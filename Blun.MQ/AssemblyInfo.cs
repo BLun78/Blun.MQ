@@ -9,4 +9,5 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Blun.MQ.AwsSQS")]
 [assembly: InternalsVisibleTo("Blun.MQ.RabbitMQ")]
 // Test
+[assembly: InternalsVisibleTo("Blun.MQ.MockClient")]
 [assembly: InternalsVisibleTo("Blun.MQ.Test")]

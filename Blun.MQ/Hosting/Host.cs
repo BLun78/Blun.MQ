@@ -3,47 +3,62 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 
 namespace Blun.MQ.Hosting
 {
     internal class Host : IHostedService, IDisposable
     {
-        private readonly IEnumerable<IClientProxy> _clientProxies;
         private readonly Queueing.QueueManager _queueManager;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public Host(
-            IEnumerable<IClientProxy> allClientProxies,
-            Queueing.QueueManager queueManager)
+        public Host(Queueing.QueueManager queueManager)
         {
-            _clientProxies = allClientProxies;
             _queueManager = queueManager;
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public  Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync([NotNull] CancellationToken cancellationToken)
         {
-            _queueManager.SetupQueueHandle(_clientProxies, _cancellationTokenSource.Token);
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
-            return Task.CompletedTask;
+            return cancellationToken.IsCancellationRequested
+                ? Task.CompletedTask
+                : _queueManager.SetupQueueHandle(_cancellationTokenSource.Token);
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync([NotNull] CancellationToken cancellationToken)
         {
-            _cancellationTokenSource.Cancel();
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
+
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+            }
             return Task.CompletedTask;
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            // ReleaseUnmanagedResources();
+            if (disposing)
+            {
+                _cancellationTokenSource?.Cancel();
+                _queueManager?.Dispose();
+                _cancellationTokenSource?.Dispose();
+            }
         }
 
         public void Dispose()
         {
-            _queueManager.Dispose();
-            foreach (var clientProxy in _clientProxies)
-            {
-                clientProxy?.Dispose();
-            }
-            _cancellationTokenSource.Dispose();
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~Host()
+        {
+            Dispose(false);
         }
     }
 }

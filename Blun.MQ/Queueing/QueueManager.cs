@@ -12,30 +12,46 @@ namespace Blun.MQ.Queueing
 {
     internal sealed partial class QueueManager : IDisposable
     {
-        private readonly ControllerProvider _controllerProvider;
-        private IEnumerable<IClientProxy> _clientProxies;
         private CancellationToken _cancellationToken;
-        private ILogger<QueueManager> _logger;
 
-        public QueueManager(ControllerProvider controllerProvider, ILoggerFactory loggerFactory)
+        private readonly ControllerProvider _controllerProvider;
+        private readonly SubscriberFactory _subscriberFactory;
+        private readonly ILogger<QueueManager> _logger;
+        private readonly IDictionary<string, IEnumerable<IMessageDefinition>> _queueDictionary;
+        private readonly IDictionary<string, ISubscriber> _subscribers;
+
+        public QueueManager(
+            [NotNull] ControllerProvider controllerProvider,
+            [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] SubscriberFactory subscriberFactory)
         {
             _logger = loggerFactory.CreateLogger<QueueManager>();
             _controllerProvider = controllerProvider;
+            _subscriberFactory = subscriberFactory;
+            _queueDictionary = CreateQueueDictionary();
+            _subscribers = new SortedDictionary<string, ISubscriber>(StringComparer.InvariantCulture);
         }
 
-        public void SetupQueueHandle(IEnumerable<IClientProxy> clientProxies, CancellationToken cancellationToken)
+        public Task SetupQueueHandle([NotNull] CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
-            _clientProxies = clientProxies;
-            foreach (var clientProxy in _clientProxies)
+            
+            foreach (var subscriberDefinition in _queueDictionary)
             {
-                clientProxy.SetupQueueHandle(CreateQueueDictionary(), cancellationToken);
-                clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
+                var subscriber = _subscriberFactory.CreateSubscriber(subscriberDefinition, cancellationToken);
+
+                _subscribers.Add(subscriberDefinition.Key, subscriber);
             }
+            
+            return Task.CompletedTask;
         }
 
         public void Dispose()
         {
+            foreach (var subscriber in _subscribers)
+            {
+                subscriber.Value?.Dispose();
+            }
         }
 
         private void ClientProxyOnMessageFromQueueReceived(object sender, [NotNull] ReceiveMessageFromQueueEventArgs e)
@@ -51,7 +67,7 @@ namespace Blun.MQ.Queueing
                    {
                        messageDefinition.MethodInfo.Invoke(controller, new object[] { e.Message });
                    }
-                   if (messageDefinition.MethodInfo.ReturnType?.GetNestedType(nameof(IMQResponse))!= null)
+                   if (messageDefinition.MethodInfo.ReturnType?.GetNestedType(nameof(IMQResponse)) != null)
                    {
                        messageDefinition.MethodInfo.Invoke(controller, new object[] { e.Message });
                    }

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.SQS;
 using Amazon.SQS.Model;
-using Blun.MQ.Context;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -39,7 +37,7 @@ namespace Blun.MQ.AwsSQS.Client
             _amazonSqsClient = awsSQSClientDecorator;
         }
         
-        public async Task<MQResponse> SendAsync([NotNull] MQRequest mqRequest)
+        public async Task<IMQResponse> SendAsync([NotNull] IMQRequest mqRequest)
         {
             var stringMessage = JsonConvert.SerializeObject(mqRequest.Message);
 
@@ -51,11 +49,9 @@ namespace Blun.MQ.AwsSQS.Client
             
             var result = await _amazonSqsClient.SendMessageAsync(sqsRequest, _cancellationToken).ConfigureAwait(false);
 
-            return new MQResponse
-            {
-                HttpStatusCode = result.HttpStatusCode,
-                Message = new Message(result.MessageId)
-            };
+            var message = new Message(result.MessageId);
+
+            return message.CreateMQResponse(httpStatusCode: HttpStatusCode.OK);
         }
 
         public void CreateQueueListener()

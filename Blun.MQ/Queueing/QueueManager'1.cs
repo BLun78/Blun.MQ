@@ -8,8 +8,16 @@ namespace Blun.MQ.Queueing
 {
     internal sealed partial class QueueManager
     {
-        internal static IDictionary<string, MessageDefinition> FindControllerByKey { get; private set; } = LoadControllers();
-        internal static List<MessageDefinition> MessageDefinitions { get; private set; } = new List<MessageDefinition>();
+        internal static IDictionary<string, MessageDefinition> FindControllerByKey => _findControllerByKey.Value;
+        private static Lazy<IDictionary<string, MessageDefinition>> _findControllerByKey { get; set; }
+
+        internal static IQueryable<MessageDefinition> MessageDefinitions =>
+            FindControllerByKey.Select(x => x.Value).AsQueryable();
+
+        static QueueManager()
+        {
+            _findControllerByKey = new Lazy<IDictionary<string, MessageDefinition>>(LoadControllers);
+        }
 
         private static IDictionary<string, MessageDefinition> LoadControllers()
         {
@@ -26,7 +34,6 @@ namespace Blun.MQ.Queueing
                     AddController(type, controllers);
                 }
             }
-
             return controllers;
         }
 
@@ -54,7 +61,7 @@ namespace Blun.MQ.Queueing
 
         private static IEnumerable<MessageDefinition> LoadMessageAttributes(Type iMqController, IEnumerable<QueueRoutingAttribute> queueAttributes)
         {
-            IEnumerable<QueueRoutingAttribute> queueRoutingAttributes = queueAttributes as QueueRoutingAttribute[] 
+            IEnumerable<QueueRoutingAttribute> queueRoutingAttributes = queueAttributes as QueueRoutingAttribute[]
                                                                         ?? queueAttributes.ToArray();
 
             foreach (var methodInfo in iMqController.GetMethods())

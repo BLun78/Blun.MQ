@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Blun.MQ.Context;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -26,7 +25,7 @@ namespace Blun.MQ.AwsSQS.Client
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
         }
 
-        public override async Task<MQResponse> SendAsync(MQRequest mqRequest)
+        public override async Task<IMQResponse> SendAsync(IMQRequest mqRequest)
         {
             var handle = GetQueueHandle(mqRequest.QueueRoute);
 

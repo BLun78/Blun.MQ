@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace Blun.MQ.Messages
         public string MessageId { get; internal set; }
 
         public string MessageName { get; internal set; }
-        
+
         public IDictionary<string, string> Headers { get; internal set; }
 
         public string Body { get; internal set; }
@@ -33,5 +34,6 @@ namespace Blun.MQ.Messages
             this.Headers = new SortedDictionary<string, string>(headers, StringComparer.Ordinal);
             this.Body = body;
         }
+
     }
 }
