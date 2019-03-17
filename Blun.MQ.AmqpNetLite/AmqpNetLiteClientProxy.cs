@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Amqp;
 using Blun.MQ;
+using Blun.MQ.Abstractions.Message;
 using Blun.MQ.Context;
-using Blun.MQ.Messages;
 
 namespace Blun.MQ.AmqpNetLite
 {

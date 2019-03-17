@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blun.MQ;
 using Blun.MQ.Abstractions;
+using Blun.MQ.Abstractions.Message;
 using Blun.MQ.Context;
-using Blun.MQ.Messages;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 

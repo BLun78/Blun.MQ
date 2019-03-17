@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Blun.MQ.Hosting;
-using Blun.MQ.Message;
+using Blun.MQ.Messages;
 using Blun.MQ.Test.Demo;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,9 +18,8 @@ namespace Blun.MQ.Test.Controller
         {
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
-            var loggerFactory = new Mock<ILoggerFactory>() { DefaultValue = DefaultValue.Mock, };
-            var demoController = new DemoController(loggerFactory.Object);
-            serviceProvider.Setup(x => x.GetService(typeof(ILoggerFactory))).Returns(loggerFactory.Object);
+            var logger = new Mock<ILogger<DemoController>>() { DefaultValue = DefaultValue.Mock, };
+            var demoController = new DemoController(logger.Object);
             serviceProvider.Setup(x => x.GetService(typeof(DemoController))).Returns(demoController);
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
 

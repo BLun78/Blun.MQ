@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Messages;
@@ -10,7 +9,6 @@ namespace Blun.MQ
 {
 #pragma warning disable CA1063 // Implement IDisposable Correctly
     public abstract class ClientProxy : IClientProxy, IDisposable
-
     {
         public abstract void Dispose();
 
@@ -22,8 +20,7 @@ namespace Blun.MQ
 
         public abstract Task<IMQResponse> SendAsync(IMQRequest request);
 
-        public abstract void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
-            CancellationToken cancellationToken);
+        public abstract void SetupQueueHandle(string queueName, CancellationToken cancellationToken);
 
     }
 #pragma warning restore CA1063 // Implement IDisposable Correctly

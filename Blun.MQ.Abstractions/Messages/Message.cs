@@ -1,23 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net;
-using System.Text;
 
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ.Messages
 {
     public class Message
     {
-        public string MessageId { get; internal set; }
-
-        public string MessageName { get; internal set; }
-
-        public IDictionary<string, string> Headers { get; internal set; }
-
-        public string Body { get; internal set; }
-
         public Message()
         {
             Headers = new SortedDictionary<string, string>(StringComparer.Ordinal);
@@ -34,6 +22,14 @@ namespace Blun.MQ.Messages
             this.Headers = new SortedDictionary<string, string>(headers, StringComparer.Ordinal);
             this.Body = body;
         }
+
+        public string MessageId { get; internal set; }
+
+        public string MessageName { get; internal set; }
+
+        public IDictionary<string, string> Headers { get; internal set; }
+
+        public string Body { get; internal set; }
 
     }
 }

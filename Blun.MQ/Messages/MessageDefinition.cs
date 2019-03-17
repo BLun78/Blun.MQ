@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+// ReSharper disable CheckNamespace
 
-namespace Blun.MQ.Queueing
+namespace Blun.MQ.Messages
 {
 
     internal class MessageDefinition : IMessageDefinition
@@ -11,7 +12,8 @@ namespace Blun.MQ.Queueing
         public QueueRoutingAttribute QueueRouting { get; internal set; }
         public Type ControllerType { get; internal set; }
         public string MessageName => this.MessageRoute.MessagePattern;
+        public string ReplayToQueueNameAndId { get; }
         public MessageRouteAttribute MessageRoute { get; internal set; }
         public MethodInfo MethodInfo { get; internal set; }
     }
-}   
+}

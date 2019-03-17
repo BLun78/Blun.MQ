@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Blun.MQ.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -23,14 +24,11 @@ namespace Blun.MQ.Hosting
             _serviceProvider = serviceProvider;
         }
 
-        public ISubscriber CreateSubscriber(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition , CancellationToken cancellationToken)
+        public Subscriber CreateSubscriber(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition , CancellationToken cancellationToken)
         {
-            var subscriber =  _serviceProvider.GetService<ISubscriber>();
-            var dictionary = new Dictionary<string, IEnumerable<IMessageDefinition>>
-            {
-                {messageDefinition.Key, messageDefinition.Value}
-            };
-            subscriber.SetupQueueHandle(dictionary, cancellationToken);
+            var subscriber =  _serviceProvider.GetService<Subscriber>();
+         
+            subscriber.SetupQueueHandle(messageDefinition, cancellationToken);
 
             return subscriber;
         }

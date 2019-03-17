@@ -1,4 +1,4 @@
-﻿using Blun.MQ.Messages;
+﻿
 
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ.Messages

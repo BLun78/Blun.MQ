@@ -13,9 +13,10 @@ namespace Blun.MQ.Test.Demo
     {
         private readonly ILogger<DemoController> _logger;
 
-        public DemoController(ILoggerFactory loggerFactory)
+        public DemoController(ILogger<DemoController> logger) 
+            : base(logger)
         {
-            _logger = loggerFactory.CreateLogger<DemoController>();
+            _logger = logger;
             _logger.LogTrace("Ctor: DemoController is created!");
         }
 

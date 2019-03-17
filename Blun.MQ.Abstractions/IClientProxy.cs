@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Messages;
@@ -15,7 +14,7 @@ namespace Blun.MQ
         Task<IMQResponse> SendAsync(IMQRequest request);
         
 
-        void SetupQueueHandle([NotNull, ItemNotNull] IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages,[NotNull] CancellationToken cancellationToken);
+        void SetupQueueHandle([NotNull, ItemNotNull] string queueName,[NotNull] CancellationToken cancellationToken);
 
     }
 }

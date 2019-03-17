@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Blun.MQ.Hosting;
 using Blun.MQ.Messages;
+using Blun.MQ.Hosting;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +18,7 @@ namespace Blun.MQ.Queueing
         private readonly SubscriberFactory _subscriberFactory;
         private readonly ILogger<QueueManager> _logger;
         private readonly IDictionary<string, IEnumerable<IMessageDefinition>> _queueDictionary;
-        private readonly IDictionary<string, ISubscriber> _subscribers;
+        private readonly IDictionary<string, Subscriber> _subscribers;
 
         public QueueManager(
             [NotNull] ControllerProvider controllerProvider,
@@ -29,7 +29,7 @@ namespace Blun.MQ.Queueing
             _controllerProvider = controllerProvider;
             _subscriberFactory = subscriberFactory;
             _queueDictionary = CreateQueueDictionary();
-            _subscribers = new SortedDictionary<string, ISubscriber>(StringComparer.InvariantCulture);
+            _subscribers = new SortedDictionary<string, Subscriber>(StringComparer.InvariantCulture);
         }
 
         public Task SetupQueueHandle([NotNull] CancellationToken cancellationToken)

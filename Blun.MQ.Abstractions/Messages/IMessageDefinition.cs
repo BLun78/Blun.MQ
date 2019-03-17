@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 // ReSharper disable CheckNamespace
-namespace Blun.MQ
+namespace Blun.MQ.Messages
 {
     public interface IMessageDefinition
     {
         string Key { get; }
         string QueueName { get; }
         string MessageName { get; }
+        string ReplayToQueueNameAndId { get; }
     }
 }

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Blun.MQ.Exceptions;
-using Blun.MQ.Message;
-using Blun.MQ.Queueing;
+using Blun.MQ.Messages;
 using JetBrains.Annotations;
 
 namespace Blun.MQ.Hosting

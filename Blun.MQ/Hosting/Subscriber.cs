@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Blun.MQ.Messages;
 using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Hosting
 {
-    internal sealed class Subscriber : ISubscriber, IDisposable
+    internal sealed class Subscriber : IDisposable
     {
         private readonly IClientProxy _clientProxy;
         private readonly ILogger<Subscriber> _logger;
@@ -20,7 +21,13 @@ namespace Blun.MQ.Hosting
         }
 
         public event EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
-        public void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages, CancellationToken cancellationToken)
+        public void SetupQueueHandle(KeyValuePair<string, IEnumerable<IMessageDefinition>> queuesAndMessages, CancellationToken cancellationToken)
+        {
+            _clientProxy.SetupQueueHandle(queuesAndMessages.Key, cancellationToken);
+            _clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
+        }
+
+        public void ClientProxyOnMessageFromQueueReceived(object sender, ReceiveMessageFromQueueEventArgs e)
         {
             throw new NotImplementedException();
         }

@@ -26,7 +26,7 @@ namespace Blun.MQ.Test.Controller
         }
 
         [TestMethod]
-        public void ProviderGetControllerTypeOK()
+        public void ProviderGetControllerTypeOk()
         {
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();

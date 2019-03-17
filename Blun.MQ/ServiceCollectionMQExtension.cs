@@ -1,10 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using Blun.MQ.Hosting;
-using Blun.MQ.Message;
-using Microsoft.AspNetCore.Builder;
+﻿using Blun.MQ.Hosting;
+using Blun.MQ.Messages;
+using Blun.MQ.Messages.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using QueueManager = Blun.MQ.Queueing.QueueManager;
 
+// ReSharper disable CheckNamespace
 namespace Blun.MQ
 {
     // ReSharper disable once InconsistentNaming
@@ -19,12 +19,16 @@ namespace Blun.MQ
         public static IServiceCollection AddMQ(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddHostedService<Host>();
-            serviceCollection.AddSingleton<QueueManager>();
-            serviceCollection.AddSingleton<ControllerFactory>();
-            serviceCollection.AddSingleton<ControllerProvider>();
-            serviceCollection.AddSingleton<SubscriberFactory>();
-            serviceCollection.AddSingleton<MQContextFactory>();
-
+            serviceCollection.AddTransient<QueueManager>();
+            serviceCollection.AddTransient<ControllerFactory>();
+            serviceCollection.AddTransient<ControllerProvider>();
+            serviceCollection.AddTransient<SubscriberFactory>();
+            serviceCollection.AddTransient<MQContextFactory>();
+            serviceCollection.AddTransient<MessageRouter>();
+            serviceCollection.AddTransient<Subscriber>();
+            serviceCollection.AddTransient<IMessageMapperStrategy, MQMessageMapperStrategy>();
+            serviceCollection.AddTransient<IMessageMapperStrategy, NetStandartMessageMapperStrategy>();
+            
             return serviceCollection;
         }
     }

@@ -163,7 +163,7 @@ namespace Blun.MQ.AwsSQS.Client
             {
                 QueueName = _queueName,
                 MessageName = message.ReceiptHandle,
-                Message = new Messages.Message(
+                Message = new Message(
                     message.MessageId,
                     message.Attributes,
                     message.Body)

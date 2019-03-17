@@ -1,6 +1,6 @@
-﻿using Blun.MQ.Messages;
+﻿// ReSharper disable CheckNamespace
 
-namespace Blun.MQ.Message
+namespace Blun.MQ.Messages
 {
     // ReSharper disable once InconsistentNaming
     public class MQContext
