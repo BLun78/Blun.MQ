@@ -38,9 +38,9 @@ namespace Blun.MQ.Hosting
             _clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
         }
 
-        public void ClientProxyOnMessageFromQueueReceived([NotNull] object sender, [NotNull] ReceiveMessageFromQueueEventArgs e)
+        public void ClientProxyOnMessageFromQueueReceived([NotNull] object sender, [NotNull] ReceiveMessageFromQueueEventArgs eventArgs)
         {
-            _ = _messageInvoker.HandleMessage(_cancellationToken, e);
+            _ = _messageInvoker.HandleMessage(_cancellationToken, eventArgs);
         }
 
         public void Dispose()
