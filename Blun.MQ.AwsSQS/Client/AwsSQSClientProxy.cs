@@ -22,7 +22,7 @@ namespace Blun.MQ.AwsSQS.Client
             _awsSqsClientDecorator = awsSQSClientDecorator;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<AwsSQSClientProxy>();
-            _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.Ordinal);
+            _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.InvariantCulture);
         }
 
         public override async Task<IMQResponse> SendAsync(IMQRequest mqRequest)

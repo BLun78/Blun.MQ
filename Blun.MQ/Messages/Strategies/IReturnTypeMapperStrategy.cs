@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-// ReSharper disable CheckNamespace
 
 namespace Blun.MQ.Messages.Strategies
 {
-    internal interface IMessageMapperStrategy
+    internal interface IReturnTypeMapperStrategy : IMapperStrategy
     {
-        bool IsStrategyAllowed(MethodInfo methodInfo);
+        IMQResponse ConvertInstance(object returnValue);
     }
 }

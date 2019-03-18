@@ -20,22 +20,18 @@ namespace Blun.MQ.Queueing
         /// </summary>
         private CancellationToken _cancellationToken;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly ControllerProvider _controllerProvider;
+        
         private readonly SubscriberFactory _subscriberFactory;
         private readonly ILogger<QueueManager> _logger;
         private readonly IDictionary<string, IEnumerable<IMessageDefinition>> _queueDictionary;
         private readonly IDictionary<string, Subscriber> _subscribers;
 
         public QueueManager(
-            [NotNull] ControllerProvider controllerProvider,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] SubscriberFactory subscriberFactory)
         {
             _logger = loggerFactory.CreateLogger<QueueManager>();
-            _controllerProvider = controllerProvider;
+            
             _subscriberFactory = subscriberFactory;
             _queueDictionary = CreateQueueDictionary();
             _subscribers = new SortedDictionary<string, Subscriber>(StringComparer.InvariantCulture);
@@ -62,41 +58,20 @@ namespace Blun.MQ.Queueing
                 subscriber.Value?.Dispose();
             }
         }
-
-        private void ClientProxyOnMessageFromQueueReceived(object sender, [NotNull] ReceiveMessageFromQueueEventArgs e)
-        {
-            if (_cancellationToken == null) throw new InvalidOperationException("SetupQueueHandle() wasn't run!");
-            _ = Task.Run(() =>
-           {
-               using (_logger.BeginScope("ReceiveMessageFromQueue"))
-               {
-                   var controller = _controllerProvider.GetController(e);
-                   var messageDefinition = FindControllerByKey[e.Key];
-                   if (messageDefinition.MethodInfo.ReturnType == null)
-                   {
-                       messageDefinition.MethodInfo.Invoke(controller, new object[] { e.Message });
-                   }
-                   if (messageDefinition.MethodInfo.ReturnType?.GetNestedType(nameof(IMQResponse)) != null)
-                   {
-                       messageDefinition.MethodInfo.Invoke(controller, new object[] { e.Message });
-                   }
-               }
-           }, _cancellationToken);
-        }
-
+        
         private static IDictionary<string, IEnumerable<IMessageDefinition>> CreateQueueDictionary()
         {
             var result = new SortedDictionary<string, IEnumerable<IMessageDefinition>>();
             var queueNames = QueueManager.MessageDefinitions
-                .OrderBy(o => o.QueueName, StringComparer.Ordinal)
+                .OrderBy(o => o.QueueName, StringComparer.InvariantCulture)
                 .Select(s => s.QueueName)
-                .Distinct(StringComparer.Ordinal);
+                .Distinct(StringComparer.InvariantCulture);
 
             foreach (var queueName in queueNames)
             {
                 var messageDefinitions = QueueManager.MessageDefinitions
-                    .Where(w => w.QueueName.Equals(queueName, StringComparison.Ordinal))
-                    .OrderBy(o => o.QueueName, StringComparer.Ordinal);
+                    .Where(w => w.QueueName.Equals(queueName, StringComparison.InvariantCulture))
+                    .OrderBy(o => o.QueueName, StringComparer.InvariantCulture);
                 result.Add(queueName, messageDefinitions);
             }
 

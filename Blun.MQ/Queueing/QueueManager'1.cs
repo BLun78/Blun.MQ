@@ -43,7 +43,7 @@ namespace Blun.MQ.Queueing
         /// <returns>Dictionary with all Controllers and Queue definitions</returns>
         private static IDictionary<string, MessageDefinition> LoadControllers()
         {
-            var controllers = new SortedDictionary<string, MessageDefinition>(StringComparer.Ordinal);
+            var controllers = new SortedDictionary<string, MessageDefinition>(StringComparer.InvariantCulture);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var types = assembly.GetTypes().Where(x =>

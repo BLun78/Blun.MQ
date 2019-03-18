@@ -4,6 +4,7 @@ using System.Linq;
 using Blun.MQ.Exceptions;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blun.MQ.Hosting
 {
@@ -15,7 +16,9 @@ namespace Blun.MQ.Hosting
         [NotNull]
         public IDictionary<string, MessageDefinition> Controllers { get; } = Queueing.QueueManager.FindControllerByKey;
 
-        internal ControllerProvider([NotNull] ControllerFactory controllerFactory, MQContextFactory mqContextFactory)
+        internal ControllerProvider(
+            [NotNull] ControllerFactory controllerFactory,
+            [NotNull] MQContextFactory mqContextFactory)
         {
             _controllerFactory = controllerFactory;
             _mqContextFactory = mqContextFactory;
@@ -25,15 +28,16 @@ namespace Blun.MQ.Hosting
         /// Get the Controller for the messagequeue request
         /// </summary>
         /// <param name="keyQueueMessage"></param>
+        /// <param name="serviceScope"></param>
         /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
         [CanBeNull]
-        internal MQController GetController([NotNull] IMessageDefinition messageDefinition)
+        internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] IMessageDefinition messageDefinition)
         {
             var context = _mqContextFactory.CreateContext(messageDefinition);
             var type = GetControllerType(messageDefinition.Key);
-            return this._controllerFactory.GetController(type, context);
+            return this._controllerFactory.GetController(serviceScope, type, context);
         }
 
         [NotNull]

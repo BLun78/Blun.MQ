@@ -19,15 +19,16 @@ namespace Blun.MQ
         public static IServiceCollection AddMQ(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddHostedService<Host>();
-            serviceCollection.AddTransient<QueueManager>();
+            serviceCollection.AddSingleton<QueueManager>();
             serviceCollection.AddTransient<ControllerFactory>();
             serviceCollection.AddTransient<ControllerProvider>();
-            serviceCollection.AddTransient<SubscriberFactory>();
-            serviceCollection.AddTransient<MQContextFactory>();
-            serviceCollection.AddTransient<MessageRouter>();
+            serviceCollection.AddSingleton<SubscriberFactory>();
+            serviceCollection.AddSingleton<MQContextFactory>();
+            serviceCollection.AddTransient<MessageInvoker>();
             serviceCollection.AddTransient<Subscriber>();
-            serviceCollection.AddTransient<IMessageMapperStrategy, MQMessageMapperStrategy>();
-            serviceCollection.AddTransient<IMessageMapperStrategy, NetStandartMessageMapperStrategy>();
+
+            serviceCollection.AddTransient<IMapperStrategy, VoidReturnTypeMapperStrategy>();
+            serviceCollection.AddTransient<IMapperStrategy, ValueTypeMapperStrategy>();
             
             return serviceCollection;
         }

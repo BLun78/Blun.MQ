@@ -12,7 +12,7 @@ namespace Blun.MQ.Messages
         public QueueRoutingAttribute QueueRouting { get; internal set; }
         public Type ControllerType { get; internal set; }
         public string MessageName => this.MessageRoute.MessagePattern;
-        public string ReplayToQueueNameAndId { get; }
+        public string ReplayTo { get; }
         public MessageRouteAttribute MessageRoute { get; internal set; }
         public MethodInfo MethodInfo { get; internal set; }
     }

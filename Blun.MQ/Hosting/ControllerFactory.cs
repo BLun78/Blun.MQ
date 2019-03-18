@@ -1,22 +1,17 @@
 ﻿using System;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blun.MQ.Hosting
 {
     internal sealed class ControllerFactory
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        internal ControllerFactory([NotNull] IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         [CanBeNull]
-        internal MQController GetController([NotNull] Type type, [NotNull] MQContext mqContext) 
+        internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] Type type, [NotNull] MQContext mqContext)
         {
-            if (!(this._serviceProvider.GetService(type) is MQController controller)) return null;
+            var serviceProvider = serviceScope.ServiceProvider;
+            if (!(serviceProvider.GetService(type) is MQController controller)) return null;
             controller.MQContext = mqContext;
             return controller;
         }

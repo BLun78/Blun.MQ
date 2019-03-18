@@ -10,7 +10,7 @@ namespace Blun.MQ.Messages
 
         public string MessageName { get; internal set; }
 
-        public string ReplayToQueueNameAndId { get; internal set; }
+        public string ReplayTo { get; internal set; }
 
         public string Key => $"{this.QueueName}.{this.MessageName}";
 

@@ -8,7 +8,7 @@ namespace Blun.MQ.Messages
     {
         public Message()
         {
-            Headers = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            Headers = new SortedDictionary<string, string>(StringComparer.InvariantCulture);
         }
 
         internal Message(string messageId) : this()
@@ -19,13 +19,11 @@ namespace Blun.MQ.Messages
         internal Message(string messageId, IDictionary<string, string> headers, string body)
         {
             this.MessageId = messageId;
-            this.Headers = new SortedDictionary<string, string>(headers, StringComparer.Ordinal);
+            this.Headers = new SortedDictionary<string, string>(headers, StringComparer.InvariantCulture);
             this.Body = body;
         }
 
         public string MessageId { get; internal set; }
-
-        public string MessageName { get; internal set; }
 
         public IDictionary<string, string> Headers { get; internal set; }
 

@@ -26,13 +26,17 @@ namespace Blun.MQ.Hosting
         /// Triggered when the application host is ready to start the service.
         /// </summary>
         /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
-        public Task StartAsync([NotNull] CancellationToken cancellationToken)
+        public async Task StartAsync([NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
-            return cancellationToken.IsCancellationRequested
+            var task = cancellationToken.IsCancellationRequested
                 ? Task.CompletedTask
                 : _queueManager.SetupQueueHandle(_cancellationTokenSource.Token);
+
+            await ((cancellationToken.IsCancellationRequested
+                ? Task.CompletedTask
+                : task).ConfigureAwait(false));
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Blun.MQ.Hosting
             }
             return Task.CompletedTask;
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             // ReleaseUnmanagedResources();
