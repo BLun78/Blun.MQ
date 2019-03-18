@@ -7,19 +7,40 @@ using Blun.MQ.Messages;
 
 namespace Blun.MQ.Queueing
 {
+    /// <summary>
+    /// QueueManager creates the definitions for the queues
+    /// </summary>
     internal sealed partial class QueueManager
     {
+
+        /// <summary>
+        /// Dictionary that contains the Controller for Key (QueueName + MethodName)
+        /// </summary>
         internal static IDictionary<string, MessageDefinition> FindControllerByKey => _findControllerByKey.Value;
+
+        /// <summary>
+        /// Lazy backfield for <see cref="QueueManager.FindControllerByKey"/>
+        /// </summary>
         private static Lazy<IDictionary<string, MessageDefinition>> _findControllerByKey { get; set; }
 
+        /// <summary>
+        /// Query over <see cref="QueueManager.FindControllerByKey"/> for MessageDefinitions
+        /// </summary>
         internal static IQueryable<MessageDefinition> MessageDefinitions =>
             FindControllerByKey.Select(x => x.Value).AsQueryable();
 
+        /// <summary>
+        /// Static Ctor
+        /// </summary>
         static QueueManager()
         {
             _findControllerByKey = new Lazy<IDictionary<string, MessageDefinition>>(LoadControllers);
         }
 
+        /// <summary>
+        /// Load all Controllers from appdomain.
+        /// </summary>
+        /// <returns>Dictionary with all Controllers and Queue definitions</returns>
         private static IDictionary<string, MessageDefinition> LoadControllers()
         {
             var controllers = new SortedDictionary<string, MessageDefinition>(StringComparer.Ordinal);

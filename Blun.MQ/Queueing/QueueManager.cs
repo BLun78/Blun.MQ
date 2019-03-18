@@ -10,10 +10,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Queueing
 {
+    /// <summary>
+    /// QueueManager creates the definitions for the queues
+    /// </summary>
     internal sealed partial class QueueManager : IDisposable
     {
+        /// <summary>
+        /// CancellationToken will canceled if the host starts the Stop Method or Dispose
+        /// </summary>
         private CancellationToken _cancellationToken;
 
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly ControllerProvider _controllerProvider;
         private readonly SubscriberFactory _subscriberFactory;
         private readonly ILogger<QueueManager> _logger;

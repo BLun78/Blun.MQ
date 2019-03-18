@@ -8,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Blun.MQ.Hosting
 {
+    /// <summary>
+    /// Blun.MQ Host
+    /// </summary>
     internal class Host : IHostedService, IDisposable
     {
         private readonly Queueing.QueueManager _queueManager;
@@ -19,6 +22,10 @@ namespace Blun.MQ.Hosting
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
+        /// <summary>
+        /// Triggered when the application host is ready to start the service.
+        /// </summary>
+        /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
         public Task StartAsync([NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
@@ -28,6 +35,10 @@ namespace Blun.MQ.Hosting
                 : _queueManager.SetupQueueHandle(_cancellationTokenSource.Token);
         }
 
+        /// <summary>
+        /// Triggered when the application host is performing a graceful shutdown.
+        /// </summary>
+        /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
         public Task StopAsync([NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
