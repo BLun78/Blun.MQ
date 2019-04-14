@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Blun.MQ.Abstractions.Message;
+using Blun.MQ.Messages;
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
@@ -14,7 +14,7 @@ namespace Blun.MQ.Example.MQControllers
     {
         [UsedImplicitly]
         [MessageRoute("HelloWorld1")]
-        public Abstractions.Message.Message HelloWorld1(Abstractions.Message.Message message)
+        public Message HelloWorld1(Message message)
         {
             return null;
         }

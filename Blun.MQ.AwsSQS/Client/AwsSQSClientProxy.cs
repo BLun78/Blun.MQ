@@ -33,7 +33,12 @@ namespace Blun.MQ.AwsSQS.Client
             return result;
         }
 
-        public override void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages, CancellationToken cancellationToken)
+        public override void SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetupQueueHandle(IDictionary<string, IEnumerable<IMessageDefinition>> queuesAndMessages, CancellationToken cancellationToken)
         {
             foreach (var queuesAndMessage in queuesAndMessages)
             {
