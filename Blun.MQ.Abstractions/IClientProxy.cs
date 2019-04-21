@@ -14,7 +14,7 @@ namespace Blun.MQ
         Task<IMQResponse> SendAsync(IMQRequest request);
         
 
-        void SetupQueueHandle([NotNull, ItemNotNull] string queueName,[NotNull] CancellationToken cancellationToken);
+        Task SetupQueueHandle([NotNull, ItemNotNull] string queueName,[NotNull] CancellationToken cancellationToken);
 
     }
 }

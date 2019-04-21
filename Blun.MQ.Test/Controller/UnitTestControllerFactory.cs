@@ -4,6 +4,7 @@ using System.Text;
 using Blun.MQ.Hosting;
 using Blun.MQ.Messages;
 using Blun.MQ.Test.Demo;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -21,10 +22,11 @@ namespace Blun.MQ.Test.Controller
             var logger = new Mock<ILogger<DemoController>>() { DefaultValue = DefaultValue.Mock, };
             var demoController = new DemoController(logger.Object);
             serviceProvider.Setup(x => x.GetService(typeof(DemoController))).Returns(demoController);
+
             var controllerFactory = new ControllerFactory(serviceProvider.Object);
 
             // act
-            var controller = controllerFactory.GetController(typeof(DemoController), new MQContext());
+            var controller = controllerFactory.GetController(serviceProvider.Object.GetService(typeof(IServiceScope)), typeof(DemoController), new MQContext());
 
             // assert
             Assert.AreEqual(typeof(DemoController), controller.GetType());

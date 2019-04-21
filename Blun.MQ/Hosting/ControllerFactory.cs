@@ -7,6 +7,13 @@ namespace Blun.MQ.Hosting
 {
     internal sealed class ControllerFactory
     {
+        private IServiceProvider @object;
+
+        public ControllerFactory(IServiceProvider @object)
+        {
+            this.@object = @object;
+        }
+
         [CanBeNull]
         internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] Type type, [NotNull] MQContext mqContext)
         {

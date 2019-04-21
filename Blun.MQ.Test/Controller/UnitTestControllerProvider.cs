@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Blun.MQ.Hosting;
 using Blun.MQ.Test.Demo;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
