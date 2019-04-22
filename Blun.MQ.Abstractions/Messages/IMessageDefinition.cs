@@ -8,6 +8,5 @@ namespace Blun.MQ.Messages
         string Key { get; }
         string QueueName { get; }
         string MessageName { get; }
-        string ReplayTo { get; }
     }
 }

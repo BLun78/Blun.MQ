@@ -21,20 +21,20 @@ namespace Blun.MQ.Queueing
         private CancellationToken _cancellationToken;
 
         
-        private readonly SubscriberFactory _subscriberFactory;
+        private readonly ConsumerFactory _subscriberFactory;
         private readonly ILogger<QueueManager> _logger;
         private readonly IDictionary<string, IEnumerable<IMessageDefinition>> _queueDictionary;
-        private readonly IDictionary<string, Subscriber> _subscribers;
+        private readonly IDictionary<string, Consumer> _subscribers;
 
         public QueueManager(
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] SubscriberFactory subscriberFactory)
+            [NotNull] ConsumerFactory subscriberFactory)
         {
             _logger = loggerFactory.CreateLogger<QueueManager>();
             
             _subscriberFactory = subscriberFactory;
             _queueDictionary = CreateQueueDictionary();
-            _subscribers = new SortedDictionary<string, Subscriber>(StringComparer.InvariantCulture);
+            _subscribers = new SortedDictionary<string, Consumer>(StringComparer.InvariantCulture);
         }
 
         public Task SetupQueueHandle([NotNull] CancellationToken cancellationToken)

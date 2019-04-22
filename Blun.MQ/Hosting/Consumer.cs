@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Blun.MQ.Messages;
-using Blun.MQ.Messages.Strategies;
-using Blun.MQ.Queueing;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Hosting
 {
-    internal sealed class Subscriber : IDisposable
+    internal sealed class Consumer : IDisposable
     {
         [NotNull] private readonly MessageInvoker _messageInvoker;
         [NotNull] private readonly IClientProxy _clientProxy;
-        [NotNull] private readonly ILogger<Subscriber> _logger;
+        [NotNull] private readonly ILogger<Consumer> _logger;
         [CanBeNull] private CancellationToken _cancellationToken;
 
-        public Subscriber(
+        public Consumer(
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IClientProxy clientProxy,
             [NotNull] MessageInvoker messageInvoker)
         {
-            _logger = loggerFactory.CreateLogger<Subscriber>();
+            _logger = loggerFactory.CreateLogger<Consumer>();
             _messageInvoker = messageInvoker;
             _clientProxy = clientProxy;
         }
@@ -38,7 +33,7 @@ namespace Blun.MQ.Hosting
             _clientProxy.MessageFromQueueReceived += ClientProxyOnMessageFromQueueReceived;
         }
 
-        public void ClientProxyOnMessageFromQueueReceived([NotNull] object sender, [NotNull] ReceiveMessageFromQueueEventArgs eventArgs)
+        private void ClientProxyOnMessageFromQueueReceived([NotNull] object sender, [NotNull] ReceiveMessageFromQueueEventArgs eventArgs)
         {
             _ = _messageInvoker.HandleMessage(_cancellationToken, eventArgs);
         }

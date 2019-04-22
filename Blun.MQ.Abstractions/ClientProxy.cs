@@ -20,7 +20,7 @@ namespace Blun.MQ
 
         public abstract Task<IMQResponse> SendAsync(IMQRequest request);
 
-        public abstract void SetupQueueHandle(string queueName, CancellationToken cancellationToken);
+        public abstract Task SetupQueueHandle(string queueName, CancellationToken cancellationToken);
 
     }
 #pragma warning restore CA1063 // Implement IDisposable Correctly

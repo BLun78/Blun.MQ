@@ -22,10 +22,10 @@ namespace Blun.MQ
             serviceCollection.AddSingleton<QueueManager>();
             serviceCollection.AddTransient<ControllerFactory>();
             serviceCollection.AddTransient<ControllerProvider>();
-            serviceCollection.AddSingleton<SubscriberFactory>();
+            serviceCollection.AddSingleton<ConsumerFactory>();
             serviceCollection.AddSingleton<MQContextFactory>();
             serviceCollection.AddTransient<MessageInvoker>();
-            serviceCollection.AddTransient<Subscriber>();
+            serviceCollection.AddTransient<Consumer>();
 
             serviceCollection.AddTransient<IMapperStrategy, VoidReturnTypeMapperStrategy>();
             serviceCollection.AddTransient<IMapperStrategy, ValueTypeMapperStrategy>();
