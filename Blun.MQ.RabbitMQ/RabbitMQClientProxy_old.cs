@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blun.MQ;
-using Blun.MQ.Abstractions;
-using Blun.MQ.Abstractions.Message;
-using Blun.MQ.Context;
 using Blun.MQ.Messages;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -26,35 +22,36 @@ namespace Blun.MQ.RabbitMQ
         {
             _connection?.Dispose();
         }
-        
+
         public override Task<IMQResponse> SendAsync(IMQRequest request)
         {
             byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request.Message));
 
             _channel.BasicPublish(request.MessageRoute, "", null, messageBodyBytes);
 
-            return Task.FromResult((IMQResponse)null);
+            return Task.FromResult((IMQResponse) null);
         }
 
-        public override void Connect()
+        public void Connect()
         {
             _connection = _connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
         }
 
-        public override void Disconnect()
+        public void Disconnect()
         {
             if (_channel != null && _channel.IsOpen)
             {
                 _channel.Close();
             }
+
             if (_connection != null && _connection.IsOpen)
             {
                 _connection.Close();
             }
         }
 
-        public override void SetupQueueHandle(IEnumerable<string> queues)
+        public void SetupQueueHandle(IEnumerable<string> queues)
         {
             throw new NotImplementedException();
         }

@@ -22,9 +22,9 @@ namespace Blun.MQ.Hosting
             _serviceProvider = serviceProvider;
         }
 
-        public Consumer CreateSubscriber(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition, CancellationToken cancellationToken)
+        public ConsumerManager CreateSubscriber(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition, CancellationToken cancellationToken)
         {
-            var consumer = _serviceProvider.GetService<Consumer>();
+            var consumer = _serviceProvider.GetService<ConsumerManager>();
 
             consumer.SetupQueueHandle(messageDefinition, cancellationToken);
 

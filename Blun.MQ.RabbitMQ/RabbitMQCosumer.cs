@@ -19,11 +19,11 @@ namespace Blun.MQ.RabbitMQ
         private readonly IProducer _producer;
         private readonly IOptionsMonitor<RabbitMQOptions> _config;
         private readonly ILogger<RabbitMQCosumer> _logger;
-        private ConnectionFactory _factory;
+        private readonly ConnectionFactory _factory;
         private IConnection _connection;
         private IModel _channel;
         private CancellationToken _cancellationToken;
-        private IMessageResponseInfo _messageResponseInfo;
+        private IMessageDefinitionResponseInfo _messageResponseInfo;
 
 
         public RabbitMQCosumer(
@@ -46,7 +46,7 @@ namespace Blun.MQ.RabbitMQ
             return Task.CompletedTask;
         }
 
-        public override Task SetupQueueHandleAsync(IMessageResponseInfo messageResponseInfo, CancellationToken cancellationToken)
+        public override Task SetupQueueHandleAsync(IMessageDefinitionResponseInfo messageResponseInfo, CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
             if (messageResponseInfo == null) throw new ArgumentNullException(nameof(messageResponseInfo));
@@ -119,10 +119,10 @@ namespace Blun.MQ.RabbitMQ
             connectionFactory.Port = _config.CurrentValue.Port;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            _connection?.Dispose();
             _channel?.Dispose();
+            _connection?.Dispose();
         }
     }
 }

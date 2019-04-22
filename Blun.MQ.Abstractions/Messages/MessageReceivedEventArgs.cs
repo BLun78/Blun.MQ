@@ -6,12 +6,12 @@ using JetBrains.Annotations;
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ.Messages
 {
-    internal class MessageReceivedEventArgs : AsyncCompletedEventArgs, IMessageDefinition, IMessageResponseInfo
+    internal class MessageReceivedEventArgs : AsyncCompletedEventArgs, IMessageDefinition, IMessageDefinitionResponseInfo
     {
-        private readonly IMessageResponseInfo _messageResponseInfo;
+        private readonly IMessageDefinitionResponseInfo _messageResponseInfo;
 
         public MessageReceivedEventArgs(
-            [NotNull] IMessageResponseInfo messageResponseInfo,
+            [NotNull] IMessageDefinitionResponseInfo messageResponseInfo,
             [CanBeNull] Exception error,
             bool cancelled,
             [CanBeNull] object userState)
@@ -22,7 +22,7 @@ namespace Blun.MQ.Messages
 
         public MessageReceivedEventArgs(
             [NotNull] Message message,
-            [NotNull] IMessageResponseInfo messageResponseInfo,
+            [NotNull] IMessageDefinitionResponseInfo messageResponseInfo,
             [CanBeNull] Exception error,
             bool cancelled,
             [CanBeNull] object userState)

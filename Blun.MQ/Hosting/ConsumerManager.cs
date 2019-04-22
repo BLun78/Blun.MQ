@@ -7,19 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Hosting
 {
-    internal sealed class Consumer : IDisposable
+    internal sealed class ConsumerManager : IDisposable
     {
         [NotNull] private readonly MessageInvoker _messageInvoker;
         [NotNull] private readonly IClientProxy _clientProxy;
-        [NotNull] private readonly ILogger<Consumer> _logger;
+        [NotNull] private readonly ILogger<ConsumerManager> _logger;
         [CanBeNull] private CancellationToken _cancellationToken;
 
-        public Consumer(
+        public ConsumerManager(
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IClientProxy clientProxy,
             [NotNull] MessageInvoker messageInvoker)
         {
-            _logger = loggerFactory.CreateLogger<Consumer>();
+            _logger = loggerFactory.CreateLogger<ConsumerManager>();
             _messageInvoker = messageInvoker;
             _clientProxy = clientProxy;
         }
