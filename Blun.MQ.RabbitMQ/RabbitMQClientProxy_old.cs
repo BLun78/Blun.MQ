@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Messages;
 using Newtonsoft.Json;
@@ -32,6 +33,11 @@ namespace Blun.MQ.RabbitMQ
             return Task.FromResult((IMQResponse) null);
         }
 
+        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Connect()
         {
             _connection = _connectionFactory.CreateConnection();
@@ -49,11 +55,6 @@ namespace Blun.MQ.RabbitMQ
             {
                 _connection.Close();
             }
-        }
-
-        public void SetupQueueHandle(IEnumerable<string> queues)
-        {
-            throw new NotImplementedException();
         }
     }
 }

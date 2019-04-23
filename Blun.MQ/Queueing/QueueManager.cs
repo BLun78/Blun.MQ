@@ -24,7 +24,7 @@ namespace Blun.MQ.Queueing
         private readonly ConsumerFactory _subscriberFactory;
         private readonly ILogger<QueueManager> _logger;
         private readonly IDictionary<string, IEnumerable<IMessageDefinition>> _queueDictionary;
-        private readonly IDictionary<string, Consumer> _subscribers;
+        private readonly IDictionary<string, ConsumerManager> _subscribers;
 
         public QueueManager(
             [NotNull] ILoggerFactory loggerFactory,
@@ -34,7 +34,7 @@ namespace Blun.MQ.Queueing
             
             _subscriberFactory = subscriberFactory;
             _queueDictionary = CreateQueueDictionary();
-            _subscribers = new SortedDictionary<string, Consumer>(StringComparer.InvariantCulture);
+            _subscribers = new SortedDictionary<string, ConsumerManager>(StringComparer.InvariantCulture);
         }
 
         public Task SetupQueueHandle([NotNull] CancellationToken cancellationToken)

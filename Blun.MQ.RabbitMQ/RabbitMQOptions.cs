@@ -13,6 +13,5 @@ namespace Blun.MQ.RabbitMQ
 
         // Example: "amqp://user:pass@hostName:port/vhost";
         public string Uri { get; set; }
-        
     }
 }

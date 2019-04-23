@@ -27,8 +27,8 @@ namespace Blun.MQ.Hosting
         /// <summary>
         /// Get the Controller for the messagequeue request
         /// </summary>
-        /// <param name="keyQueueMessage"></param>
         /// <param name="serviceScope"></param>
+        /// <param name="messageDefinition"></param>
         /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>

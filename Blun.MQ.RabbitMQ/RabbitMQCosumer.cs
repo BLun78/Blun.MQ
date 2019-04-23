@@ -70,7 +70,7 @@ namespace Blun.MQ.RabbitMQ
             {
                 var body = e.Body;
                 var messageString = Encoding.UTF8.GetString(body);
-                Message message = new Message();
+                var message = new Message();
 
                 if (_cancellationToken.IsCancellationRequested)
                 {
@@ -103,7 +103,6 @@ namespace Blun.MQ.RabbitMQ
             else
             {
                 connectionFactory.Uri = new Uri(_config.CurrentValue.Uri);
-                ;
             }
 
             // connectionFactory.Ssl= new SslOption("servername, cert, true");
@@ -116,6 +115,7 @@ namespace Blun.MQ.RabbitMQ
             connectionFactory.UserName = _config.CurrentValue.UserName;
             connectionFactory.Password = _config.CurrentValue.Password;
             connectionFactory.HostName = _config.CurrentValue.HostName;
+            connectionFactory.VirtualHost = _config.CurrentValue.VirtualHost;
             connectionFactory.Port = _config.CurrentValue.Port;
         }
 
