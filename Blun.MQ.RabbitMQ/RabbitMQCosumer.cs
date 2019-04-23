@@ -49,8 +49,7 @@ namespace Blun.MQ.RabbitMQ
         public override Task SetupQueueHandleAsync(IMessageDefinitionResponseInfo messageResponseInfo, CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
-            if (messageResponseInfo == null) throw new ArgumentNullException(nameof(messageResponseInfo));
-            _messageResponseInfo = messageResponseInfo;
+            _messageResponseInfo = messageResponseInfo ?? throw new ArgumentNullException(nameof(messageResponseInfo));
             _cancellationToken = cancellationToken;
 
             _connection = _factory.CreateConnection();

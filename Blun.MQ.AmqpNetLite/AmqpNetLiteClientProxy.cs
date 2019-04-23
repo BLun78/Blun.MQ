@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Amqp;
-using Blun.MQ;
-using Blun.MQ.Abstractions.Message;
-using Blun.MQ.Context;
+using Blun.MQ.Messages;
 
 namespace Blun.MQ.AmqpNetLite
 {
@@ -25,18 +23,23 @@ namespace Blun.MQ.AmqpNetLite
             Disconnect();
         }
         
-        public override Task<MQResponse> SendAsync(MQRequest request)
+        public override Task<IMQResponse> SendAsync(IMQRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public override void Connect()
+        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public  void Connect()
         {
             _connection = new Connection(_adresse);
             _session = new Session(_connection);
         }
 
-        public override void Disconnect()
+        public  void Disconnect()
         {
             if (!_session.IsClosed)
             {
@@ -46,11 +49,6 @@ namespace Blun.MQ.AmqpNetLite
             {
                 _connection.Close();
             }
-        }
-
-        public override void SetupQueueHandle(IEnumerable<string> queues)
-        {
-            throw new NotImplementedException();
         }
     }
 }
