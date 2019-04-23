@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Blun.MQ.Abstractions;
 using Blun.MQ.Messages;
 using Blun.MQ.RabbitMQ.Extensions;
 using JetBrains.Annotations;
@@ -16,7 +15,6 @@ namespace Blun.MQ.RabbitMQ
     // ReSharper disable once InconsistentNaming
     internal class RabbitMQCosumer : Consumer, IDisposable
     {
-        private readonly IProducer _producer;
         private readonly IOptionsMonitor<RabbitMQOptions> _config;
         private readonly ILogger<RabbitMQCosumer> _logger;
         private readonly ConnectionFactory _factory;
@@ -28,10 +26,8 @@ namespace Blun.MQ.RabbitMQ
 
         public RabbitMQCosumer(
             ILoggerFactory loggerFactory,
-            IProducer producer,
             IOptionsMonitor<RabbitMQOptions> config)
         {
-            _producer = producer;
             _config = config;
             _logger = loggerFactory.CreateLogger<RabbitMQCosumer>();
             _factory = CreateConnectionFactory();
@@ -63,6 +59,16 @@ namespace Blun.MQ.RabbitMQ
             return Task.CompletedTask;
         }
 
+        public Task Ack()
+        {
+            return Task.CompletedTask;
+        }
+        
+        public Task NotAck()
+        {
+            return Task.CompletedTask;
+        }
+            
         private void ConsumerOnReceived(object sender, [NotNull] BasicDeliverEventArgs e)
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
