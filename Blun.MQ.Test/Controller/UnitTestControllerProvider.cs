@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Blun.MQ.Hosting;
+using Blun.MQ.Controllers;
 using Blun.MQ.Test.Demo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

@@ -33,10 +33,10 @@ namespace Blun.MQ.Controllers
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
         [CanBeNull]
-        internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] IMessageDefinition messageDefinition)
+        internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] MessageReceivedEventArgs eventArgs)
         {
-            var context = _mqContextFactory.CreateContext(messageDefinition);
-            var type = GetControllerType(messageDefinition.Key);
+            var context = _mqContextFactory.CreateContext(eventArgs);
+            var type = GetControllerType(eventArgs.Key);
             return this._controllerFactory.GetController(serviceScope, type, context);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Blun.MQ.Controllers;
 using Blun.MQ.Hosting;
 using Blun.MQ.Messages;
 using Blun.MQ.Test.Demo;

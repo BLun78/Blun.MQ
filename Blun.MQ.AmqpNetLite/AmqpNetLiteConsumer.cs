@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Blun.MQ.Messages;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Amqp;
 using Amqp.Framing;
 using Amqp.Types;
+using JetBrains.Annotations;
 
 namespace Blun.MQ.AmqpNetLite
 {
@@ -14,11 +16,11 @@ namespace Blun.MQ.AmqpNetLite
     {
         private readonly IOptionsMonitor<AmqpNetLiteOptions> _config;
         private readonly ILogger<AmqpNetLiteConsumer> _logger;
-        private IMessageDefinitionResponseInfo _messageResponseInfo;
         private CancellationToken _cancellationToken;
         private Connection _connection;
         private Session _session;
         private Address _address;
+        private KeyValuePair<string, IEnumerable<IMessageDefinition>> _queuesAndMessages;
 
         public AmqpNetLiteConsumer(
             ILoggerFactory loggerFactory,
@@ -29,11 +31,12 @@ namespace Blun.MQ.AmqpNetLite
             _logger = loggerFactory.CreateLogger<AmqpNetLiteConsumer>();
         }
         
-        public override async Task SetupQueueHandleAsync(IMessageDefinitionResponseInfo messageResponseInfo, CancellationToken cancellationToken)
+        public override async Task SetupQueueHandleAsync(
+            [NotNull] KeyValuePair<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
+            [NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
-            if (messageResponseInfo == null) throw new ArgumentNullException(nameof(messageResponseInfo));
-            _messageResponseInfo = messageResponseInfo;
+            _queuesAndMessages = queuesAndMessages;
             _cancellationToken = cancellationToken;
 
             _address = new Address(_config.CurrentValue.Uri);
@@ -44,7 +47,7 @@ namespace Blun.MQ.AmqpNetLite
         public override Task StartListenerAsync()
         {
             _session = new Session(_connection);
-            var receiver = new ReceiverLink(_session, "Interop.Server-receiver", _messageResponseInfo.QueueName);
+            var receiver = new ReceiverLink(_session, "Interop.Server-receiver", _queuesAndMessages.Key);
             int linkId = 0;
             while (true)
             {

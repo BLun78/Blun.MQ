@@ -43,7 +43,7 @@ namespace Blun.MQ.Messages
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var messageDefinition = QueueManager.FindControllerByKey[e.Key];
-
+                    
                     var controller = _controllerProvider.GetController(serviceScope, e);
                     var parameters = _messageMapper.CreateParameters(messageDefinition);
 
