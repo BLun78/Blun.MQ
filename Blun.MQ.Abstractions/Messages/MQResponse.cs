@@ -7,7 +7,8 @@ namespace Blun.MQ.Messages
     internal class MQResponse : IMQResponse
     {
         public Message Message { get; internal set; }
-        public HttpStatusCode HttpStatusCode { get; set; }
+        
+        public MQStatusCode MQStatusCode { get; internal set; }
         public long ContentLength { get; internal set; }
     }
 }

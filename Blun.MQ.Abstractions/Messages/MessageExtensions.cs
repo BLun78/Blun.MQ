@@ -16,12 +16,12 @@ namespace Blun.MQ.Messages
             };
         }
 
-        public static IMQResponse CreateMQResponse(this Message message, HttpStatusCode httpStatusCode)
+        public static IMQResponse CreateMQResponse(this Message message, MQStatusCode mqStatusCode)
         {
             return new MQResponse()
             {
                 Message = message,
-                HttpStatusCode = httpStatusCode,
+                MQStatusCode = mqStatusCode,
                 ContentLength = 0
             };
         }

@@ -29,7 +29,7 @@ namespace Blun.MQ.Messages
                 .Cast<IReturnTypeMapperStrategy>();
         }
 
-        public MQRequest CreateMQRequest(MessageDefinition messageDefinition, ReceiveMessageFromQueueEventArgs eventArgs)
+        public MQRequest CreateMQRequest(MessageDefinition messageDefinition, MessageReceivedEventArgs eventArgs)
         {
             var result = new MQRequest()
             {

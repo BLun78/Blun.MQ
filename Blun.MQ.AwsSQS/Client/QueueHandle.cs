@@ -51,7 +51,7 @@ namespace Blun.MQ.AwsSQS.Client
 
             var message = new Message(result.MessageId);
 
-            return message.CreateMQResponse(httpStatusCode: HttpStatusCode.OK);
+            return message.CreateMQResponse(MQStatusCode.Ok);
         }
 
         public void CreateQueueListener()

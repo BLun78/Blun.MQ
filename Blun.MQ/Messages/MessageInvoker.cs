@@ -33,7 +33,7 @@ namespace Blun.MQ.Messages
             _messageMapper = messageMapper;
         }
 
-        public Task HandleMessage(CancellationToken cancellationToken, ReceiveMessageFromQueueEventArgs e)
+        public Task HandleMessage(CancellationToken cancellationToken, MessageReceivedEventArgs e)
         {
             if (cancellationToken == null) throw new InvalidOperationException("SetupQueueHandle() wasn't run!");
             return Task.Run(() =>

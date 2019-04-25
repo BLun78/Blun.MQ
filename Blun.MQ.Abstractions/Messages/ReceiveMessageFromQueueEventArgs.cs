@@ -4,7 +4,7 @@
 
 namespace Blun.MQ.Messages
 {
-    public class ReceiveMessageFromQueueEventArgs : EventArgs, IMessageDefinition ,IMessageDefinitionResponseInfo
+    public class ReceiveMessageFromQueueEventArgs2 : EventArgs, IMessageDefinition ,IMessageDefinitionResponseInfo
     {
         public string QueueName { get; internal set; }
 

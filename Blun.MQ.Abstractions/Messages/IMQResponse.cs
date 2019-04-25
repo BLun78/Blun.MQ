@@ -7,7 +7,8 @@ namespace Blun.MQ.Messages
     public interface IMQResponse
     {
         Message Message { get; }
-        HttpStatusCode HttpStatusCode { get; set; }
+        // ReSharper disable once InconsistentNaming
+        MQStatusCode MQStatusCode { get; }
         long ContentLength { get; }
     }
 }
