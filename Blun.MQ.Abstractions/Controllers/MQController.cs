@@ -21,7 +21,6 @@ namespace Blun.MQ
 
         // ReSharper disable once InconsistentNaming
         internal MQContext MQContext;
-
         protected MQContext Context => MQContext;
 
 
