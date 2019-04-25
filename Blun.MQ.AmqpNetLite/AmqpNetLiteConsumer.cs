@@ -54,7 +54,7 @@ namespace Blun.MQ.AmqpNetLite
                     receiver.Accept(request);
                     string replyTo = request.Properties.ReplyTo;
                     
-                    
+                    // TODO : ReplyTo kommt später
                     var sender = new SenderLink(_session, "Interop.Server-sender-" + (++linkId).ToString(), replyTo);
 
                     var response = new Amqp.Message();
@@ -66,9 +66,7 @@ namespace Blun.MQ.AmqpNetLite
                     }
                     catch (Exception exception)
                     {
-                        Console.Error.WriteLine("Error waiting for response to be sent: {0} exception {1}",
-                            GetContent(response), exception.Message);
-                        break;
+                        throw;
                     }
                     sender.Close();
                 }

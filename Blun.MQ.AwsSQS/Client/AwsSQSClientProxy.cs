@@ -25,7 +25,7 @@ namespace Blun.MQ.AwsSQS.Client
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.InvariantCulture);
         }
 
-        public override async Task<MQResponse> SendAsync(IMQRequest mqRequest)
+        public override async Task<IMQResponse> SendAsync(IMQRequest mqRequest)
         {
             var handle = GetQueueHandle(mqRequest.QueueRoute);
 
@@ -33,7 +33,7 @@ namespace Blun.MQ.AwsSQS.Client
             return result;
         }
 
-        public override void SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

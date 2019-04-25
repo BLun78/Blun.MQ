@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blun.MQ.AwsSQS;
 using Blun.MQ;
+using Blun.MQ.AmqpNetLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +33,7 @@ namespace Blun.MQ.Example
             });
 
             services.AddMQ();
-            services.AddAwsSQSAdapter();
+            services.AddAmqpNetLiteAdapter();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
