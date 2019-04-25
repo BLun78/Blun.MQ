@@ -7,7 +7,7 @@ using Blun.MQ.Messages;
 
 namespace Blun.MQ.AmqpNetLite
 {
-    internal sealed class AmqpNetLiteClientProxy : ClientProxy, IClientProxy
+    internal sealed class AmqpNetLiteClientProxy
     {
         private Connection _connection;
         private Session _session;
@@ -15,36 +15,37 @@ namespace Blun.MQ.AmqpNetLite
 
         public AmqpNetLiteClientProxy()
         {
-            _adresse =new Address("amqp://guest:guest@localhost:5672");
+            _adresse = new Address("amqp://guest:guest@localhost:5672");
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             Disconnect();
         }
-        
-        public override Task<IMQResponse> SendAsync(IMQRequest request)
+
+        public Task<IMQResponse> SendAsync(IMQRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        public Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public  void Connect()
+        public void Connect()
         {
             _connection = new Connection(_adresse);
             _session = new Session(_connection);
         }
 
-        public  void Disconnect()
+        public void Disconnect()
         {
             if (!_session.IsClosed)
             {
                 _session.Close();
             }
+
             if (!_connection.IsClosed)
             {
                 _connection.Close();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blun.MQ.Controllers;
 using Blun.MQ.Hosting;
 using Blun.MQ.Queueing;
 using JetBrains.Annotations;

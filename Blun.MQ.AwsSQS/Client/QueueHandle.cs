@@ -15,7 +15,7 @@ namespace Blun.MQ.AwsSQS.Client
 {
     internal sealed class QueueHandle : IDisposable
     {
-        public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
+        // public EventHandler<ReceiveMessageFromQueueEventArgs> MessageFromQueueReceived;
         public bool IsListening;
 
         private readonly string _queueName;
@@ -76,10 +76,10 @@ namespace Blun.MQ.AwsSQS.Client
             IsListening = true;
         }
 
-        private void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
-        {
-            MessageFromQueueReceived?.Invoke(this, e);
-        }
+//        private void OnReceiveMessageFromQueueEventArgs(ReceiveMessageFromQueueEventArgs e)
+//        {
+//            MessageFromQueueReceived?.Invoke(this, e);
+//        }
 
         private async Task ListenLoop()
         {
@@ -159,17 +159,17 @@ namespace Blun.MQ.AwsSQS.Client
 
         private void HandleMessage(Amazon.SQS.Model.Message message)
         {
-            var messageEvent = new ReceiveMessageFromQueueEventArgs
-            {
-                QueueName = _queueName,
-                MessageName = message.ReceiptHandle,
-                Message = new Message(
-                    message.MessageId,
-                    message.Attributes,
-                    message.Body)
-            };
-
-            OnReceiveMessageFromQueueEventArgs(messageEvent);
+//            var messageEvent = new ReceiveMessageFromQueueEventArgs
+//            {
+//                QueueName = _queueName,
+//                MessageName = message.ReceiptHandle,
+//                Message = new Message(
+//                    message.MessageId,
+//                    message.Attributes,
+//                    message.Body)
+//            };
+//
+//            OnReceiveMessageFromQueueEventArgs(messageEvent);
         }
         private static string CombineUriToString(string baseUri, string relativeOrAbsoluteUri)
         {

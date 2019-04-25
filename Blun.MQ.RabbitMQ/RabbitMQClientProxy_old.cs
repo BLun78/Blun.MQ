@@ -8,7 +8,7 @@ using RabbitMQ.Client;
 
 namespace Blun.MQ.RabbitMQ
 {
-    public class RabbitMqClientProxy : ClientProxy, IClientProxy
+    public class RabbitMqClientProxy 
     {
         private readonly ConnectionFactory _connectionFactory;
         private IConnection _connection;
@@ -19,12 +19,12 @@ namespace Blun.MQ.RabbitMQ
             _connectionFactory = new ConnectionFactory();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             _connection?.Dispose();
         }
 
-        public override Task<IMQResponse> SendAsync(IMQRequest request)
+        public Task<IMQResponse> SendAsync(IMQRequest request)
         {
             byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request.Message));
 
@@ -33,7 +33,7 @@ namespace Blun.MQ.RabbitMQ
             return Task.FromResult((IMQResponse) null);
         }
 
-        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        public Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

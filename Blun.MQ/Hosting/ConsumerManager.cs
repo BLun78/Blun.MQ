@@ -25,15 +25,16 @@ namespace Blun.MQ.Hosting
         }
 
         public void SetupQueueHandle(
-            [NotNull] KeyValuePair<string, IEnumerable<IMessageDefinitionResponseInfo>> queuesAndMessages,
+            [NotNull] KeyValuePair<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
             [NotNull] CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
-            _consumer.SetupQueueHandleAsync(queuesAndMessages.Key, cancellationToken);
+            _consumer.SetupQueueHandleAsync(queuesAndMessages, cancellationToken);
             _consumer.MessageReceived += ClientProxyOnMessageFromQueueReceived;
         }
 
-        private void ClientProxyOnMessageFromQueueReceived([NotNull] object sender, [NotNull] MessageReceivedEventArgs eventArgs)
+        private void ClientProxyOnMessageFromQueueReceived([NotNull] object sender,
+            [NotNull] MessageReceivedEventArgs eventArgs)
         {
             _ = _messageInvoker.HandleMessage(_cancellationToken, eventArgs);
         }

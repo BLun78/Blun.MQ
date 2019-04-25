@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Blun.MQ.AwsSQS.Client
 {
     // ReSharper disable once InconsistentNaming
-    internal class AwsSQSClientProxy : ClientProxy, IClientProxy
+    internal class AwsSQSClientProxy 
     {
         private readonly AwsSQSClientDecorator _awsSqsClientDecorator;
         private readonly ILoggerFactory _loggerFactory;
@@ -25,7 +25,7 @@ namespace Blun.MQ.AwsSQS.Client
             _queueHandles = new SortedDictionary<string, QueueHandle>(StringComparer.InvariantCulture);
         }
 
-        public override async Task<IMQResponse> SendAsync(IMQRequest mqRequest)
+        public async Task<IMQResponse> SendAsync(IMQRequest mqRequest)
         {
             var handle = GetQueueHandle(mqRequest.QueueRoute);
 
@@ -33,7 +33,7 @@ namespace Blun.MQ.AwsSQS.Client
             return result;
         }
 
-        public override Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
+        public Task SetupQueueHandle(string queueName, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -43,13 +43,13 @@ namespace Blun.MQ.AwsSQS.Client
             foreach (var queuesAndMessage in queuesAndMessages)
             {
                 var newQueueHandle = new QueueHandle(queuesAndMessage.Value, _awsSqsClientDecorator, _loggerFactory, cancellationToken);
-                newQueueHandle.MessageFromQueueReceived += OnMessageFromQueueReceived;
+                // newQueueHandle.MessageFromQueueReceived += OnMessageFromQueueReceived;
                 newQueueHandle.CreateQueueListener();
                 _queueHandles.Add(queuesAndMessage.Key, newQueueHandle);
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             foreach (var queueHandle in _queueHandles)
             {
@@ -57,9 +57,9 @@ namespace Blun.MQ.AwsSQS.Client
             }
         }
 
-        private void OnMessageFromQueueReceived(object sender, ReceiveMessageFromQueueEventArgs e)
+        private void OnMessageFromQueueReceived(object sender, Message e)
         {
-            OnReceiveMessageFromQueueEventArgs(e);
+            //OnReceiveMessageFromQueueEventArgs(e);
         }
 
         private QueueHandle GetQueueHandle(string queue)

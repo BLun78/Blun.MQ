@@ -3,7 +3,7 @@ using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blun.MQ.Hosting
+namespace Blun.MQ.Controllers
 {
     internal sealed class ControllerFactory
     {

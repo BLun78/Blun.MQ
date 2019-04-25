@@ -1,8 +1,9 @@
-﻿using Blun.MQ.Hosting;
+﻿using Blun.MQ.Controllers;
+using Blun.MQ.Hosting;
 using Blun.MQ.Messages;
 using Blun.MQ.Messages.Strategies;
+using Blun.MQ.Queueing;
 using Microsoft.Extensions.DependencyInjection;
-using QueueManager = Blun.MQ.Queueing.QueueManager;
 
 // ReSharper disable CheckNamespace
 namespace Blun.MQ
