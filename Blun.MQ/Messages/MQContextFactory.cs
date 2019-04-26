@@ -9,7 +9,7 @@ namespace Blun.MQ.Messages
         public MQContext CreateContext(MessageReceivedEventArgs eventArgs)
         {
             var context = new MQContext();
-            context.Request = eventArgs.CreateMQRequest();
+            context.MQRequest = eventArgs.CreateMQRequest();
             return context;
         }
     }

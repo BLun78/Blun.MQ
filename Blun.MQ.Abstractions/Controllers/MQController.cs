@@ -21,8 +21,11 @@ namespace Blun.MQ
 
         // ReSharper disable once InconsistentNaming
         internal MQContext MQContext;
+        
+        /// <summary>
+        /// MessageQueue Context
+        /// </summary>
         protected MQContext Context => MQContext;
-
 
         protected virtual void Dispose(bool disposing)
         {

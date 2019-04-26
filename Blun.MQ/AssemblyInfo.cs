@@ -4,6 +4,9 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+//  Extern
+[assembly: InternalsVisibleTo("Newtonsoft.Json")]
+
 // Adapter
 [assembly: InternalsVisibleTo("Blun.MQ.AmqpNetLite")]
 [assembly: InternalsVisibleTo("Blun.MQ.AwsSQS")]

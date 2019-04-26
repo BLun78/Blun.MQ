@@ -10,6 +10,9 @@ namespace Blun.MQ.Messages
         [EnumMember(Value = "Ok")]
         Ok = 200,
         
+        [EnumMember(Value = "OkNoContent")]
+        OkNoContent = 204,
+        
         [EnumMember(Value = "NotOk")]
         NotOk = 400,
         

@@ -3,19 +3,22 @@
 namespace Blun.MQ.Messages
 {
     // ReSharper disable once InconsistentNaming
-    public class MQContext
+    public sealed class MQContext
     {
-        public MQContext()
+        internal MQContext()
         {
         }
 
-        internal MQContext(IMQRequest request)
+        internal MQContext(MQRequest request)
         {
-            Request = request;
-            Response = new MQResponse();
+            MQRequest = request;
+            MQResponse = new MQResponse();
         }
+
+        internal MQResponse MQResponse;
+        internal MQRequest MQRequest;
         
-        public IMQRequest Request { get; internal set; }
-        public IMQResponse Response { get; internal set; }
+        public IMQRequest Request => MQRequest;
+        public IMQResponse Response => MQResponse;
     }
 }

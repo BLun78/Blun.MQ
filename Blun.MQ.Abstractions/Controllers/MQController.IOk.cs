@@ -10,22 +10,35 @@ namespace Blun.MQ
     {
         public IMQResponse Ok()
         {
-            throw new System.NotImplementedException();
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
+            MQContext.MQResponse.Message = MQContext.MQRequest.CreateNullMessage();
+            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
+            return MQContext.MQResponse;
         }
 
         public IMQResponse Ok(string result)
         {
-            throw new System.NotImplementedException();
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
+            MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage();
+            MQContext.MQResponse.ContentLength = result.Length;
+            return MQContext.MQResponse;
         }
-        
+
         public IMQResponse Ok(object result)
         {
-            throw new System.NotImplementedException();
+            return OkImpl(result, result);
         }
 
         public IMQResponse Ok(object result, params object[] results)
         {
-            throw new System.NotImplementedException();
+            return OkImpl(result, result);
+        }
+
+        private IMQResponse OkImpl(params object[] results)
+        {
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
+
+            return MQContext.MQResponse;
         }
     }
 }

@@ -1,19 +1,17 @@
-﻿using System.Net;
+using Newtonsoft.Json;
 
-// ReSharper disable CheckNamespace
 namespace Blun.MQ.Messages
 {
     internal static class MessageExtensions
     {
-        public static IMQRequest CreateMQRequest(this Message message, string queueRoute, string messageRoute)
+        public static string GetJson(this Message message)
         {
-            return new MQRequest()
-            {
-                Message = message,
-                MessageRoute = messageRoute,
-                QueueRoute = queueRoute,
-                ContentLength = 0
-            };
+            return JsonConvert.SerializeObject(message);
+        }
+
+        public static int GetJsonSize(this Message message)
+        {
+            return message.GetJson().Length;
         }
 
         public static IMQResponse CreateMQResponse(this Message message, MQStatusCode mqStatusCode)
@@ -23,15 +21,6 @@ namespace Blun.MQ.Messages
                 Message = message,
                 MQStatusCode = mqStatusCode,
                 ContentLength = 0
-            };
-        }
-
-        public static IMQRequest CreateMQRequest(this MessageReceivedEventArgs eventArgs)
-        {
-            return new MQRequest()
-            {
-                Message = eventArgs.Message,
-                MessageRoute = eventArgs.MessageName
             };
         }
     }
