@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Blun.MQ.RabbitMQ
         private IModel _channel;
         private CancellationToken _cancellationToken;
         private IMessageDefinitionResponseInfo _messageResponseInfo;
+        private KeyValuePair<string, IEnumerable<IMessageDefinition>> _queuesAndMessages;
 
 
         public RabbitMQCosumer(
@@ -42,10 +44,12 @@ namespace Blun.MQ.RabbitMQ
             return Task.CompletedTask;
         }
 
-        public override Task SetupQueueHandleAsync(IMessageDefinitionResponseInfo messageResponseInfo, CancellationToken cancellationToken)
+        public override Task SetupQueueHandleAsync(
+            [NotNull] KeyValuePair<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
+            [NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
-            _messageResponseInfo = messageResponseInfo ?? throw new ArgumentNullException(nameof(messageResponseInfo));
+            _queuesAndMessages = queuesAndMessages;
             _cancellationToken = cancellationToken;
 
             _connection = _factory.CreateConnection();
@@ -62,12 +66,12 @@ namespace Blun.MQ.RabbitMQ
         {
             return Task.CompletedTask;
         }
-        
+
         public Task NotAck()
         {
             return Task.CompletedTask;
         }
-            
+
         private void ConsumerOnReceived(object sender, [NotNull] BasicDeliverEventArgs e)
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
