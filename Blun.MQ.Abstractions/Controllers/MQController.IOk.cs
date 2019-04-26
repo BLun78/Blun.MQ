@@ -20,7 +20,7 @@ namespace Blun.MQ
         {
             MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
             MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage();
-            MQContext.MQResponse.ContentLength = result.Length;
+            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
             return MQContext.MQResponse;
         }
 
@@ -36,8 +36,9 @@ namespace Blun.MQ
 
         private IMQResponse OkImpl(params object[] results)
         {
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
 
+
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
             return MQContext.MQResponse;
         }
     }
