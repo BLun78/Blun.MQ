@@ -5,7 +5,7 @@ namespace Blun.MQ.Messages
 {
     // ReSharper disable once InconsistentNaming
     [DataContract(Name = "MQStatusCode")]
-    public enum MQStatusCode
+    internal enum MQStatusCode
     {
         [EnumMember(Value = "Ok")]
         Ok = 200,

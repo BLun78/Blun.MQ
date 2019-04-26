@@ -4,7 +4,7 @@ using Blun.MQ.Messages;
 
 namespace Blun.MQ.Abstractions
 {
-    public interface IProducer
+    internal interface IProducer
     {
         Task<IMQResponse> SendAsync(IMQRequest request);
     }

@@ -3,7 +3,7 @@
 // ReSharper disable CheckNamespace
 namespace Blun.MQ.Messages
 {
-    public interface IMessageDefinition
+    internal interface IMessageDefinition
     {
         string Key { get; }
         string QueueName { get; }
