@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Blun.MQ.Controllers;
 using Blun.MQ.Messages;
+using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace Blun.MQ
@@ -11,26 +12,37 @@ namespace Blun.MQ
     {
         public IMQResponse NotOk()
         {
+            return CreateMQNullResponse(MQStatusCode.NotOk);
+        }
+
+        public IMQResponse NotOk([NotNull] string result)
+        {
+            if (string.IsNullOrWhiteSpace(result))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(result));
+
+            return CreateMQResponse(result, MQStatusCode.NotOk);
+        }
+
+        public IMQResponse NotOk([NotNull] string result, [NotNull] Exception exception)
+        {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
             throw new NotImplementedException();
         }
 
-        public IMQResponse NotOk(string result)
+        public IMQResponse NotOk([NotNull] object result)
         {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
             throw new NotImplementedException();
         }
 
-        public IMQResponse NotOk(string result, Exception exception)
+        public IMQResponse NotOk([NotNull] object result, [NotNull] Exception exception)
         {
-            throw new NotImplementedException();
-        }
+            if (result == null) throw new ArgumentNullException(nameof(result));
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
 
-        public IMQResponse NotOk(object result)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMQResponse NotOk(object result, Exception exception)
-        {
             throw new NotImplementedException();
         }
     }
