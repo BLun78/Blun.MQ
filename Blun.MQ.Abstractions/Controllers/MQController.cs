@@ -39,5 +39,21 @@ namespace Blun.MQ
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+        
+        private MQResponse CreateMQResponse(string result, MQStatusCode mqStatusCode)
+        {
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Error;
+            MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage(result);
+            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
+            return MQContext.MQResponse;
+        }
+        
+        private MQResponse CreateMQNullResponse(MQStatusCode mqStatusCode)
+        {
+            MQContext.MQResponse.MQStatusCode = MQStatusCode.Error;
+            MQContext.MQResponse.Message = MQContext.MQRequest.CreateNullMessage();
+            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
+            return MQContext.MQResponse;
+        }
     }
 }

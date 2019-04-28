@@ -14,20 +14,15 @@ namespace Blun.MQ
     {
         public IMQResponse Ok()
         {
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
-            MQContext.MQResponse.Message = MQContext.MQRequest.CreateNullMessage();
-            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
-            return MQContext.MQResponse;
+            return CreateMQNullResponse(MQStatusCode.Ok);
         }
 
         public IMQResponse Ok([NotNull] string result)
         {
             if (string.IsNullOrWhiteSpace(result))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(result));
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
-            MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage(result);
-            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
-            return MQContext.MQResponse;
+
+            return CreateMQResponse(result, MQStatusCode.Ok);
         }
 
         public IMQResponse Ok([NotNull] object result)

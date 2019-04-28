@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Blun.MQ.Common;
 using Blun.MQ.Controllers;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
@@ -12,21 +13,18 @@ namespace Blun.MQ
     // ReSharper disable once InconsistentNaming
     public abstract partial class MQController : IError
     {
-        public IMQResponse Error([NotNull] string result,[Optional, CanBeNull] Exception exception)
+        public IMQResponse Error([NotNull] string message, [Optional, CanBeNull] Exception exception)
         {
-            if (string.IsNullOrWhiteSpace(result))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(result));
-            
-            
-            
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
-            MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage(result);
-            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
-            return MQContext.MQResponse;
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(message));
+
+            var result = $"{message}{Environment.NewLine}{exception.FlattenException()}";
+
+            return CreateMQResponse(result, MQStatusCode.Error);
         }
 
         public IMQResponse Error([NotNull] object message, [Optional, CanBeNull] Exception exception)
-        
+
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -34,17 +32,17 @@ namespace Blun.MQ
             try
             {
                 stringResult = JsonConvert.SerializeObject(message);
-               
             }
             catch (JsonSerializationException jse)
             {
                 _logger.LogJsonSerializationException(jse, "Error Message");
             }
-            
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Ok;
-            MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage(stringResult);
-            MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
-            return MQContext.MQResponse;
+
+            var result = string.IsNullOrWhiteSpace(stringResult)
+                ? $"The error message is not serializable!{Environment.NewLine}{exception.FlattenException()}"
+                : $"{stringResult}{Environment.NewLine}{exception.FlattenException()}";
+
+            return CreateMQResponse(result, MQStatusCode.Error);
         }
     }
 }
