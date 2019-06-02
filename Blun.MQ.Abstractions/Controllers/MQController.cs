@@ -40,17 +40,19 @@ namespace Blun.MQ
             GC.SuppressFinalize(this);
         }
         
+        // ReSharper disable once InconsistentNaming
         private MQResponse CreateMQResponse(string result, MQStatusCode mqStatusCode)
         {
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Error;
+            MQContext.MQResponse.MQStatusCode = mqStatusCode;
             MQContext.MQResponse.Message = MQContext.MQRequest.CreateMessage(result);
             MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
             return MQContext.MQResponse;
         }
         
+        // ReSharper disable once InconsistentNaming
         private MQResponse CreateMQNullResponse(MQStatusCode mqStatusCode)
         {
-            MQContext.MQResponse.MQStatusCode = MQStatusCode.Error;
+            MQContext.MQResponse.MQStatusCode = mqStatusCode;
             MQContext.MQResponse.Message = MQContext.MQRequest.CreateNullMessage();
             MQContext.MQResponse.ContentLength = MQContext.MQResponse.Message.MessageSize;
             return MQContext.MQResponse;

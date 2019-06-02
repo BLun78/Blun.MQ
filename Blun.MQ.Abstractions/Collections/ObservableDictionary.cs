@@ -192,7 +192,7 @@ namespace Blun.MQ.Collections
 
         public void AddRange(IDictionary<TKey, TValue> items)
         {
-            if (items == null) throw new ArgumentNullException("items");
+            if (items == null) throw new ArgumentNullException(nameof(items));
 
             if (items.Count > 0)
             {
@@ -213,7 +213,7 @@ namespace Blun.MQ.Collections
 
         private void Insert(TKey key, TValue value, bool add)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             TValue item;
             if (Dictionary.TryGetValue(key, out item))

@@ -15,7 +15,7 @@ namespace Blun.MQ.Test.Controller
         {
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
-            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var controllerFactory = new ControllerFactory();
 
             // act
             var provider = new ControllerProvider(controllerFactory, null);
@@ -29,7 +29,7 @@ namespace Blun.MQ.Test.Controller
         {
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
-            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var controllerFactory = new ControllerFactory();
             var provider = new ControllerProvider(controllerFactory, null);
 
             // act
@@ -45,7 +45,7 @@ namespace Blun.MQ.Test.Controller
         {
             // arrange
             var serviceProvider = new Mock<IServiceProvider>();
-            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var controllerFactory = new ControllerFactory();
             var provider = new ControllerProvider(controllerFactory, null);
             var key = Guid.NewGuid().ToString();
 

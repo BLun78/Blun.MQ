@@ -34,7 +34,7 @@ namespace Blun.MQ.Messages
             _messageMapper = messageMapper;
         }
 
-        public Task HandleMessage(CancellationToken cancellationToken, MessageReceivedEventArgs e)
+        public Task HandleMessage(MessageReceivedEventArgs eventArgs, CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new InvalidOperationException("SetupQueueHandle() wasn't run!");
             return Task.Run(() =>
@@ -42,9 +42,9 @@ namespace Blun.MQ.Messages
                 using (_logger.BeginScope("ReceiveMessageFromQueue"))
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
-                    var messageDefinition = QueueManager.FindControllerByKey[e.Key];
+                    var messageDefinition = QueueManager.FindControllerByKey[eventArgs.Key];
                     
-                    var controller = _controllerProvider.GetController(serviceScope, e);
+                    var controller = _controllerProvider.GetController(serviceScope, eventArgs);
                     var parameters = _messageMapper.CreateParameters(messageDefinition);
 
                 }

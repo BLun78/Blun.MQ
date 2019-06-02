@@ -25,12 +25,11 @@ namespace Blun.MQ
             serviceCollection.AddTransient<ControllerProvider>();
             serviceCollection.AddSingleton<ConsumerFactory>();
             serviceCollection.AddSingleton<MQContextFactory>();
+            serviceCollection.AddSingleton<IMQContextAccessor, MQContextAccessor>();
             serviceCollection.AddTransient<MessageInvoker>();
-            serviceCollection.AddTransient<Consumer>();
-
             serviceCollection.AddTransient<IMapperStrategy, VoidReturnTypeMapperStrategy>();
             serviceCollection.AddTransient<IMapperStrategy, ValueTypeMapperStrategy>();
-            
+
             return serviceCollection;
         }
     }

@@ -28,16 +28,17 @@ namespace Blun.MQ.Controllers
         /// Get the Controller for the messagequeue request
         /// </summary>
         /// <param name="serviceScope"></param>
-        /// <param name="messageDefinition"></param>
+        /// <param name="eventArgs"></param>
         /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
         /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
         [CanBeNull]
-        internal MQController GetController([NotNull]IServiceScope serviceScope, [NotNull] MessageReceivedEventArgs eventArgs)
+        internal MQController GetController([NotNull] IServiceScope serviceScope,
+            [NotNull] MessageReceivedEventArgs eventArgs)
         {
-            var context = _mqContextFactory.CreateContext(eventArgs);
+            var context = _mqContextFactory.CreateContext(serviceScope, eventArgs);
             var type = GetControllerType(eventArgs.Key);
-            return this._controllerFactory.GetController(serviceScope, type, context);
+            return this._controllerFactory.CreateController(serviceScope, type, context);
         }
 
         [NotNull]
@@ -50,12 +51,15 @@ namespace Blun.MQ.Controllers
                 {
                     throw new NullReferenceException($"Key [{keyQueueMessage}] return null!");
                 }
+
                 return this.Controllers[keyQueueMessage].ControllerType;
             }
+
             if (!this.Controllers.Any())
             {
                 throw new ControllerAreEmptyException();
             }
+
             throw new KeyNotFoundException($"Key [{keyQueueMessage}] does not exists!");
         }
     }

@@ -25,10 +25,10 @@ namespace Blun.MQ.Test.Controller
             var demoController = new DemoController(logger.Object);
             serviceProvider.Setup(x => x.GetService(typeof(DemoController))).Returns(demoController);
             
-            var controllerFactory = new ControllerFactory(serviceProvider.Object);
+            var controllerFactory = new ControllerFactory();
 
             // act
-            var controller = controllerFactory.GetController(scope.Object, typeof(DemoController), new MQContext());
+            var controller = controllerFactory.CreateController(scope.Object, typeof(DemoController), new MQContext());
 
             // assert
             Assert.AreEqual(typeof(DemoController), controller.GetType());
