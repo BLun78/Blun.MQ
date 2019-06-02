@@ -21,12 +21,12 @@ namespace Blun.MQ
         {
             serviceCollection.AddHostedService<Host>();
             serviceCollection.AddSingleton<QueueManager>();
-            serviceCollection.AddTransient<ControllerFactory>();
-            serviceCollection.AddTransient<ControllerProvider>();
+            serviceCollection.AddSingleton<ControllerFactory>();
+            serviceCollection.AddSingleton<ControllerProvider>();
             serviceCollection.AddSingleton<ConsumerFactory>();
             serviceCollection.AddSingleton<MQContextFactory>();
-            serviceCollection.AddSingleton<IMQContextAccessor, MQContextAccessor>();
             serviceCollection.AddTransient<MessageInvoker>();
+            serviceCollection.AddSingleton<IMQContextAccessor, MQContextAccessor>();
             serviceCollection.AddTransient<IMapperStrategy, VoidReturnTypeMapperStrategy>();
             serviceCollection.AddTransient<IMapperStrategy, ValueTypeMapperStrategy>();
 

@@ -15,8 +15,8 @@ namespace Blun.MQ.Collections
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class ObservableDictionary<TKey, TValue> : 
-        IDictionary<TKey, TValue>, 
+    internal sealed class ObservableDictionary<TKey, TValue> : 
+        IDictionary<TKey, TValue>,
         INotifyCollectionChanged,
         INotifyPropertyChanged
     {
@@ -27,7 +27,7 @@ namespace Blun.MQ.Collections
 
         private IDictionary<TKey, TValue> _dictionary;
 
-        protected IDictionary<TKey, TValue> Dictionary
+        private IDictionary<TKey, TValue> Dictionary
         {
             get { return _dictionary; }
         }
@@ -241,7 +241,7 @@ namespace Blun.MQ.Collections
             OnPropertyChanged(ValuesName);
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }

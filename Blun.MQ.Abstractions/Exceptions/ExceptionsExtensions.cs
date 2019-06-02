@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 
 // ReSharper disable once CheckNamespace
-namespace Blun.MQ.Common
+namespace Blun.MQ.Exceptions
 {
     public static class ExceptionsExtensions
     {

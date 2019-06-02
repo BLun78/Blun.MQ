@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Blun.MQ.Common;
 using Blun.MQ.Controllers;
+using Blun.MQ.Exceptions;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Newtonsoft.Json;

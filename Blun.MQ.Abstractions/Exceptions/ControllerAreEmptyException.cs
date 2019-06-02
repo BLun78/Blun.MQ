@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Blun.MQ.Exceptions
 {
     public class ControllerAreEmptyException : Exception

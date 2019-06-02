@@ -1,5 +1,5 @@
-﻿using Blun.MQ.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Blun.MQ;
 
 // ReSharper disable CheckNamespace
 namespace Blun.MQ.RabbitMQ
@@ -16,7 +16,7 @@ namespace Blun.MQ.RabbitMQ
         public static IServiceCollection AddRabbitMQ(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<Consumer, RabbitMQCosumer>();
-            // serviceCollection.AddTransient<IProducer, >();
+            //serviceCollection.AddTransient<IProducer>();
             
             return serviceCollection;
         }
