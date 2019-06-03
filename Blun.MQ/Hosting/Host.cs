@@ -11,6 +11,7 @@ namespace Blun.MQ.Hosting
     /// <summary>
     /// Blun.MQ Host
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class Host : IHostedService, IDisposable
     {
         private readonly Queueing.QueueManager _queueManager;

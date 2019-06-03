@@ -27,28 +27,32 @@ namespace Blun.MQ.Messages
             [NotNull] ControllerProvider controllerProvider,
             [NotNull] MessageMapper messageMapper)
         {
-
             _logger = loggerFactory.CreateLogger<MessageInvoker>();
             _serviceProvider = serviceProvider;
             _controllerProvider = controllerProvider;
             _messageMapper = messageMapper;
         }
 
-        public Task HandleMessage(MessageReceivedEventArgs eventArgs, CancellationToken cancellationToken)
+        public Task HandleMessage(
+            [NotNull] MessageReceivedEventArgs eventArgs,
+            [NotNull] CancellationToken cancellationToken)
         {
             if (cancellationToken == null) throw new InvalidOperationException("SetupQueueHandle() wasn't run!");
-            return Task.Run(() =>
-            {
-                using (_logger.BeginScope("ReceiveMessageFromQueue"))
-                using (var serviceScope = _serviceProvider.CreateScope())
-                {
-                    var messageDefinition = QueueManager.FindControllerByKey[eventArgs.Key];
-                    
-                    var controller = _controllerProvider.GetController(serviceScope, eventArgs);
-                    var parameters = _messageMapper.CreateParameters(messageDefinition);
 
-                }
-            }, cancellationToken);
+            return Task.Run(() => HandleScopedMessage(eventArgs), cancellationToken);
+        }
+
+        private void HandleScopedMessage([NotNull] MessageReceivedEventArgs eventArgs)
+        {
+            using (_logger.BeginScope("ReceiveMessageFromQueue"))
+            using (var serviceScope = _serviceProvider.CreateScope())
+            {
+                var messageDefinition = QueueManager.FindControllerByKey[eventArgs.Key];
+
+                var controller = _controllerProvider.GetController(serviceScope, eventArgs);
+                var parameters = _messageMapper.CreateParameters(messageDefinition);
+                
+            }
         }
     }
 }

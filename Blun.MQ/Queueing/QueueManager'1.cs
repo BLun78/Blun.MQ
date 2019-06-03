@@ -51,7 +51,7 @@ namespace Blun.MQ.Queueing
 
                 foreach (var type in types)
                 {
-                    if (!type.GetInterfaces().Contains(typeof(MQController))) continue;
+                    if (type.BaseType != typeof(MQController)) continue;
 
                     AddController(type, controllers);
                 }

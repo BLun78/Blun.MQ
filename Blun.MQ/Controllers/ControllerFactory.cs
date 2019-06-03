@@ -8,11 +8,19 @@ namespace Blun.MQ.Controllers
     internal sealed class ControllerFactory
     {
         [CanBeNull]
-        internal MQController CreateController([NotNull]IServiceScope serviceScope, [NotNull] Type type, [NotNull] MQContext mqContext)
+        public MQController CreateController(
+            [NotNull] IServiceScope serviceScope,
+            [NotNull] Type type,
+            [NotNull] MQContext mqContext)
         {
-            var serviceProvider = serviceScope.ServiceProvider;
-            if (!(serviceProvider.GetService(type) is MQController controller)) return null;
+            if (!(serviceScope.ServiceProvider.GetService(type) is MQController controller)) return null;
             controller.MQContext = mqContext;
+            
+            if (serviceScope.ServiceProvider.GetService<IMQContextAccessor>() is MQContextAccessor mqMessageContext)
+            {
+                mqMessageContext.MQContext = mqContext;
+            }
+
             return controller;
         }
     }

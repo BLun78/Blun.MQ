@@ -16,7 +16,7 @@ namespace Blun.MQ.Controllers
         [NotNull]
         public IDictionary<string, MessageDefinition> Controllers { get; } = Queueing.QueueManager.FindControllerByKey;
 
-        internal ControllerProvider(
+        public ControllerProvider(
             [NotNull] ControllerFactory controllerFactory,
             [NotNull] MQContextFactory mqContextFactory)
         {
@@ -30,10 +30,11 @@ namespace Blun.MQ.Controllers
         /// <param name="serviceScope"></param>
         /// <param name="eventArgs"></param>
         /// <exception cref="KeyNotFoundException">The Key is not found in the dictonary</exception>
-        /// <exception cref="ControllerAreEmptyException">The dictonary is empty</exception>
+        /// <exception cref="ControllersAreEmptyException">The dictonary is empty</exception>
         /// <returns></returns>
         [CanBeNull]
-        internal MQController GetController([NotNull] IServiceScope serviceScope,
+        public MQController GetController(
+            [NotNull] IServiceScope serviceScope,
             [NotNull] MessageReceivedEventArgs eventArgs)
         {
             var context = _mqContextFactory.CreateContext(serviceScope, eventArgs);
@@ -42,14 +43,14 @@ namespace Blun.MQ.Controllers
         }
 
         [NotNull]
-        internal Type GetControllerType([NotNull] string keyQueueMessage)
+        public Type GetControllerType([NotNull] string keyQueueMessage)
         {
             if (this.Controllers.ContainsKey(keyQueueMessage))
             {
                 var messageDefinition = this.Controllers[keyQueueMessage];
                 if (messageDefinition == null)
                 {
-                    throw new NullReferenceException($"Key [{keyQueueMessage}] return null!");
+                    throw new ControllerAreNullReferenceException($"Key [{keyQueueMessage}] return null!");
                 }
 
                 return this.Controllers[keyQueueMessage].ControllerType;
@@ -57,7 +58,7 @@ namespace Blun.MQ.Controllers
 
             if (!this.Controllers.Any())
             {
-                throw new ControllerAreEmptyException();
+                throw new ControllersAreEmptyException();
             }
 
             throw new KeyNotFoundException($"Key [{keyQueueMessage}] does not exists!");

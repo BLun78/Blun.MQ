@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Blun.MQ.Abstractions\Blun.MQ.Abstractions.csproj" />
+    <ProjectReference Include="..\Blun.MQ\Blun.MQ.csproj" />
   </ItemGroup>
 
 </Project>

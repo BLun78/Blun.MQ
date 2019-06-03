@@ -32,8 +32,7 @@ namespace Blun.MQ.Example
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMQ();
-            services.AddAmqpNetLiteAdapter();
+            services.AddMqWithAmqpNetLiteAdapter();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

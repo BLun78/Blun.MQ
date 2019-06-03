@@ -6,9 +6,11 @@ namespace Blun.MQ.AmqpNetLite
     public static class AmqpNetLiteExtension
     {
         // ReSharper disable once InconsistentNaming
-        public static void AddAmqpNetLiteAdapter(this IServiceCollection serviceCollection)
+        public static void AddMqWithAmqpNetLiteAdapter(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<Consumer, AmqpNetLiteConsumer>();
+
+            ServiceCollectionMQExtension.AddMQ(serviceCollection);
         }
     }
 }

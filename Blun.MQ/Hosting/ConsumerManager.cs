@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Hosting
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal sealed class ConsumerManager : IDisposable
     {
         [NotNull] private readonly MessageInvoker _messageInvoker;

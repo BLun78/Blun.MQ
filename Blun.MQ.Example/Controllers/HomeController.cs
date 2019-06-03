@@ -17,6 +17,7 @@ namespace Blun.MQ.Example.Controllers
 
         public IActionResult Privacy()
         {
+            
             return View();
         }
 

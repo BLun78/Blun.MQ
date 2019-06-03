@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Blun.MQ.Messages
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class MessageMapper
     {
         [NotNull] [ItemNotNull] private readonly IEnumerable<IParameterMapperStrategy> _parameterMapperStrategies;
@@ -21,9 +22,11 @@ namespace Blun.MQ.Messages
         {
             _logger = loggerFactory.CreateLogger<MessageMapper>();
             var strategies = mapperStrategies as IMapperStrategy[] ?? mapperStrategies.ToArray();
+            
             _parameterMapperStrategies = strategies
                 .Where(x => x.GetType().GetInterfaces().Contains(typeof(IParameterMapperStrategy)))
                 .Cast<IParameterMapperStrategy>();
+            
             _returnTypeMapperStrategies = strategies
                 .Where(x => x.GetType().GetInterfaces().Contains(typeof(IReturnTypeMapperStrategy)))
                 .Cast<IReturnTypeMapperStrategy>();

@@ -8,16 +8,15 @@ namespace Blun.MQ.Messages
     // ReSharper disable once InconsistentNaming
     internal sealed class MQContextFactory
     {
-        public MQContext CreateContext([NotNull] IServiceScope serviceScope, MessageReceivedEventArgs eventArgs)
+        public MQContext CreateContext(
+            [NotNull] IServiceScope serviceScope,
+            [NotNull] MessageReceivedEventArgs eventArgs)
         {
             var context = new MQContext
             {
                 MQRequest = eventArgs.CreateMQRequest()
             };
-            if (serviceScope.ServiceProvider.GetService<IMQContextAccessor>() is MQContextAccessor mqMessageContext)
-            {
-                mqMessageContext.MQContext = context;
-            }
+            
             return context;
         }
     }

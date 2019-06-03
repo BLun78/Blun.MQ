@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Blun.MQ
 {
     // ReSharper disable once InconsistentNaming
-    public static class ServiceCollectionMQExtension
+    internal static class ServiceCollectionMQExtension
     {
         /// <summary>
         /// Register thw Blun.MQ Framework
@@ -19,17 +19,20 @@ namespace Blun.MQ
         // ReSharper disable once InconsistentNaming
         public static IServiceCollection AddMQ(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddHostedService<Host>();
             serviceCollection.AddSingleton<QueueManager>();
             serviceCollection.AddSingleton<ControllerFactory>();
             serviceCollection.AddSingleton<ControllerProvider>();
             serviceCollection.AddSingleton<ConsumerFactory>();
+            serviceCollection.AddSingleton<ConsumerManager>();
             serviceCollection.AddSingleton<MQContextFactory>();
             serviceCollection.AddTransient<MessageInvoker>();
+            serviceCollection.AddTransient<MessageMapper>();
             serviceCollection.AddSingleton<IMQContextAccessor, MQContextAccessor>();
             serviceCollection.AddTransient<IMapperStrategy, VoidReturnTypeMapperStrategy>();
             serviceCollection.AddTransient<IMapperStrategy, ValueTypeMapperStrategy>();
 
+            // it must be the last one
+            serviceCollection.AddHostedService<Host>();
             return serviceCollection;
         }
     }
