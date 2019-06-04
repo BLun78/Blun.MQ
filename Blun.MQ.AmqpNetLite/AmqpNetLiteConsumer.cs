@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Amqp;
 using Amqp.Framing;
-using Amqp.Types;
+using Amqp.Sasl;
 using JetBrains.Annotations;
 
 namespace Blun.MQ.AmqpNetLite
@@ -40,11 +40,10 @@ namespace Blun.MQ.AmqpNetLite
             _cancellationToken = cancellationToken;
 
             _address = new Address(_config.CurrentValue.Uri);
-            _connection = await Connection.Factory.CreateAsync(_address).ConfigureAwait(false);
-            
+            _connection = await Connection.Factory.CreateAsync(_address).ConfigureAwait(true);
         }
 
-        public override Task StartListenerAsync()
+        public override Task StartListenerAsync(CancellationToken cancellationToken)
         {
             _session = new Session(_connection);
             var receiver = new ReceiverLink(_session, "Interop.Server-receiver", _queuesAndMessages.Key);

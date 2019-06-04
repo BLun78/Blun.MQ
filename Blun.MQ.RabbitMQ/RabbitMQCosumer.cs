@@ -35,7 +35,7 @@ namespace Blun.MQ.RabbitMQ
             _factory = CreateConnectionFactory();
         }
 
-        public override Task StartListenerAsync()
+        public override Task StartListenerAsync(CancellationToken cancellationToken)
         {
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += ConsumerOnReceived;

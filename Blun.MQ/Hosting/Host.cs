@@ -33,7 +33,7 @@ namespace Blun.MQ.Hosting
 
             var task = cancellationToken.IsCancellationRequested
                 ? Task.CompletedTask
-                : _queueManager.SetupQueueHandle(_cancellationTokenSource.Token);
+                : _queueManager.SetupQueueHandleAsync(_cancellationTokenSource.Token);
 
             await ((cancellationToken.IsCancellationRequested
                 ? Task.CompletedTask

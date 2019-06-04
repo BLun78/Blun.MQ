@@ -32,6 +32,10 @@ namespace Blun.MQ.Example
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.Configure<AmqpNetLiteOptions>(options =>
+            {
+                options.Uri = "amqp://artemis:simetraehcapa@127.0.0.1:35672/";
+            });
             services.AddMqWithAmqpNetLiteAdapter();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

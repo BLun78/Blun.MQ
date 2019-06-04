@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,13 +22,13 @@ namespace Blun.MQ.Hosting
             _serviceProvider = serviceProvider;
         }
 
-        public ConsumerManager CreateSubscriber(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition,
+        public async Task<ConsumerManager> CreateSubscriberAsync(KeyValuePair<string, IEnumerable<IMessageDefinition>> messageDefinition,
             CancellationToken cancellationToken)
         {
             var consumer = _serviceProvider.GetService<ConsumerManager>();
 
-            consumer.SetupQueueHandle(messageDefinition, cancellationToken);
-
+            await consumer.SetupQueueHandle(messageDefinition, cancellationToken).ConfigureAwait(false);
+            
             return consumer;
         }
     }

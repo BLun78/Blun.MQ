@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Blun.MQ.Messages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -25,13 +26,18 @@ namespace Blun.MQ.Hosting
             _consumer = consumer;
         }
 
-        public void SetupQueueHandle(
+        public Task SetupQueueHandle(
             [NotNull] KeyValuePair<string, IEnumerable<IMessageDefinition>> queuesAndMessages,
             [NotNull] CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
-            _consumer.SetupQueueHandleAsync(queuesAndMessages, cancellationToken);
             _consumer.MessageReceived += ClientProxyOnMessageFromQueueReceived;
+            return _consumer.SetupQueueHandleAsync(queuesAndMessages, cancellationToken);
+        }
+
+        public Task StartListenerAsync([NotNull] CancellationToken cancellationToken)
+        {
+            return _consumer.StartListenerAsync(cancellationToken);
         }
 
         private void ClientProxyOnMessageFromQueueReceived([NotNull] object sender,
