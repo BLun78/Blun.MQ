@@ -14,6 +14,7 @@ namespace Blun.MQ.AmqpNetLite
     internal class AmqpNetLiteConsumer : Consumer
     {
         private readonly IOptionsMonitor<AmqpNetLiteOptions> _config;
+        private readonly HandleRecievedMessage _handleRecievedMessage;
         private readonly ILogger<AmqpNetLiteConsumer> _logger;
         private CancellationToken _cancellationToken;
         private Connection _connection;
@@ -23,10 +24,12 @@ namespace Blun.MQ.AmqpNetLite
 
         public AmqpNetLiteConsumer(
             ILoggerFactory loggerFactory,
-            IOptionsMonitor<AmqpNetLiteOptions> config
+            IOptionsMonitor<AmqpNetLiteOptions> config,
+            HandleRecievedMessage handleRecievedMessage
             )
         {
             _config = config;
+            _handleRecievedMessage = handleRecievedMessage;
             _logger = loggerFactory.CreateLogger<AmqpNetLiteConsumer>();
         }
         
@@ -54,6 +57,9 @@ namespace Blun.MQ.AmqpNetLite
                 {
                     receiver.Accept(request);
                     string replyTo = request.Properties.ReplyTo;
+
+//                    var messageReceivedEventArgs = _handleRecievedMessage.CreateEvent(request);
+//                    this.OnMessageReceived(messageReceivedEventArgs);
                     
                     // TODO : ReplyTo kommt später
                     var sender = new SenderLink(_session, "Interop.Server-sender-" + (++linkId).ToString(), replyTo);

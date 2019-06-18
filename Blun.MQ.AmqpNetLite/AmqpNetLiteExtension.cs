@@ -9,6 +9,7 @@ namespace Blun.MQ.AmqpNetLite
         public static void AddMqWithAmqpNetLiteAdapter(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<Consumer, AmqpNetLiteConsumer>();
+            serviceCollection.AddSingleton<HandleRecievedMessage>();
 
             ServiceCollectionMQExtension.AddMQ(serviceCollection);
         }
