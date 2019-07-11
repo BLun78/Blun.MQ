@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Apache.NMS.NetStd" Version="1.7.1.3898" />
+    <PackageReference Include="Apache.NMS.NetStd" Version="1.7.1.3899" />
   </ItemGroup>
 </Project>
