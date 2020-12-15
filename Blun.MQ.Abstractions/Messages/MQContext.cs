@@ -12,14 +12,12 @@ namespace Blun.MQ.Messages
 
         internal MQContext(MQRequest request)
         {
-            MQRequest = request;
-            MQResponse = new MQResponse();
+            Request = request;
+            Response = new MQResponse();
         }
 
-        internal MQResponse MQResponse;
-        internal MQRequest MQRequest;
-        
-        public IMQRequest Request => MQRequest;
-        public IMQResponse Response => MQResponse;
+
+        public IMQRequest Request { get; internal set; }
+        public IMQResponse Response { get; internal set; }
     }
 }

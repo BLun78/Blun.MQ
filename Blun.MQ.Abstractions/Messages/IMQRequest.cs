@@ -10,5 +10,6 @@ namespace Blun.MQ.Messages
         string QueueRoute { get; }
         string MessageRoute { get; }
         long ContentLength { get; }
+        IMQResponse ConvertToResponse();
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blun.MQ", "Blun.MQ\Blun.MQ.csproj", "{72F008C7-3720-4623-8E6D-F87C28FA4CF2}"
 EndProject
@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blun.MQ.Abstractions", "Blu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blun.MQ.Example", "Blun.MQ.Example\Blun.MQ.Example.csproj", "{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blun.MQ.MockClient", "Blun.MQ.MockClient\Blun.MQ.MockClient.csproj", "{1DDA76AE-8F40-497E-9090-66A6E5A99053}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blun.MQ.MockClient", "Blun.MQ.MockClient\Blun.MQ.MockClient.csproj", "{1DDA76AE-8F40-497E-9090-66A6E5A99053}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blun.MQ.ActiveMQ", "Blun.MQ.ActiveMQ\Blun.MQ.ActiveMQ.csproj", "{96951C05-AAC0-46DC-AD76-07B664F1E4B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blun.MQ.ActiveMQ", "Blun.MQ.ActiveMQ\Blun.MQ.ActiveMQ.csproj", "{96951C05-AAC0-46DC-AD76-07B664F1E4B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{D08AE2E7-ABFA-4D97-942B-B6A1ACDD02DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,17 +44,17 @@ Global
 		{CF4CDE8C-8785-4AEF-B371-96C3F87E0AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF4CDE8C-8785-4AEF-B371-96C3F87E0AE7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A4E2BF7-0C5B-41BE-8DB2-8E1FDA5D6D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A4E2BF7-0C5B-41BE-8DB2-8E1FDA5D6D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A4E2BF7-0C5B-41BE-8DB2-8E1FDA5D6D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A4E2BF7-0C5B-41BE-8DB2-8E1FDA5D6D20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A4E2BF7-0C5B-41BE-8DB2-8E1FDA5D6D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDA8FF94-91A2-44FC-B3E8-6EC7ECEE5CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CDA8FF94-91A2-44FC-B3E8-6EC7ECEE5CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDA8FF94-91A2-44FC-B3E8-6EC7ECEE5CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDA8FF94-91A2-44FC-B3E8-6EC7ECEE5CEB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DDA76AE-8F40-497E-9090-66A6E5A99053}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DDA76AE-8F40-497E-9090-66A6E5A99053}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DDA76AE-8F40-497E-9090-66A6E5A99053}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -62,6 +64,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{807C0C11-3E9F-41A3-9076-0ECD637369B1} = {D08AE2E7-ABFA-4D97-942B-B6A1ACDD02DA}
+		{3DB25BD2-B490-4AF3-92EB-BED9973A3D89} = {D08AE2E7-ABFA-4D97-942B-B6A1ACDD02DA}
+		{1DDA76AE-8F40-497E-9090-66A6E5A99053} = {D08AE2E7-ABFA-4D97-942B-B6A1ACDD02DA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {47867CC7-5231-43C7-944B-5F095D83FD05}
