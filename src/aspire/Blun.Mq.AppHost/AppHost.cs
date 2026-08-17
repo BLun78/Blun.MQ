@@ -28,11 +28,12 @@ var node1 = AddMqNode("node1", nodeNum: 1, grpcPort: 5001, httpPort: 5081);
 var node2 = AddMqNode("node2", nodeNum: 2, grpcPort: 5002, httpPort: 5082);
 var node3 = AddMqNode("node3", nodeNum: 3, grpcPort: 5003, httpPort: 5083);
 
-// Demo producer publishes 1 "spam" message/sec to node 2.
+// Demo producer publishes 1000 "spam" messages/sec to node 2.
 var producer = builder.AddExecutable("producer", "cargo", rustWorkspaceRoot,
         "run", "--bin", "mq-demo-producer")
     .WithEnvironment("MQ_NODE_ADDR", "http://localhost:5002")
     .WithEnvironment("MQ_QUEUE", "spam")
+    .WithEnvironment("MQ_RATE", "1000")
     .WaitFor(node2);
 
 // Demo consumer reads the "spam" queue from node 1.
