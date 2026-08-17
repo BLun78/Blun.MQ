@@ -5,6 +5,7 @@ use tokio_stream::wrappers::ReceiverStream;
 use tokio_stream::StreamExt;
 use tonic::transport::Channel;
 
+#[derive(Clone)]
 pub struct MqClient {
     inner: MqServiceClient<Channel>,
 }
