@@ -1,0 +1,15 @@
+[package]
+name = "mq-demo-producer"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "mq-demo-producer"
+path = "src/main.rs"
+
+[dependencies]
+mq-client = { path = "../../Blun.Mq.Client" }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }

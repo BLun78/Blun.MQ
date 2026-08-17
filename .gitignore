@@ -1,0 +1,16 @@
+# Rust
+/target/
+**/target/
+
+# .NET
+bin/
+obj/
+
+# Node / Angular
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vs/
+*.user

@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package blun.mq.v1;
+
+// MqService is the client-facing API exposed by every node.
+// A producer/consumer can connect to any node; for queues that are not
+// yet backed by a per-partition Raft group, the node currently serving
+// the request is authoritative for its own in-memory copy only.
+service MqService {
+  // Publish a single message to a queue on this node.
+  rpc Publish(PublishRequest) returns (PublishResponse);
+
+  // Consume streams messages from a queue on this node to the caller.
+  // Messages are delivered at-least-once; the consumer sends an Ack
+  // for each delivered message via the same stream.
+  rpc Consume(stream ConsumeRequest) returns (stream ConsumeResponse);
+
+  // Status returns the current message count for every known queue on
+  // this node, then streams updates as they happen (server push).
+  rpc WatchStatus(StatusRequest) returns (stream StatusUpdate);
+}
+
+message PublishRequest {
+  string queue = 1;
+  bytes payload = 2;
+}
+
+message PublishResponse {
+  uint64 offset = 1;
+}
+
+message ConsumeRequest {
+  oneof kind {
+    Subscribe subscribe = 1;
+    Ack ack = 2;
+  }
+}
+
+message Subscribe {
+  string queue = 1;
+}
+
+message Ack {
+  uint64 offset = 1;
+}
+
+message ConsumeResponse {
+  uint64 offset = 1;
+  bytes payload = 2;
+}
+
+message StatusRequest {}
+
+message StatusUpdate {
+  string node_id = 1;
+  map<string, uint64> queue_depths = 2;
+}
+
+// RaftRpc carries openraft's internal AppendEntries/Vote/InstallSnapshot
+// messages as opaque, serde-serialized envelopes between the 3 nodes of
+// the "spam" queue's Raft group. This crosses the same port as
+// MqService (both are registered on the same tonic server), since a
+// node's own address is also its Raft peer address.
+service RaftRpc {
+  rpc AppendEntries(RaftEnvelope) returns (RaftEnvelope);
+  rpc Vote(RaftEnvelope) returns (RaftEnvelope);
+  rpc InstallSnapshot(RaftEnvelope) returns (RaftEnvelope);
+}
+
+message RaftEnvelope {
+  bytes payload = 1;
+}
