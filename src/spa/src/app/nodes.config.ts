@@ -12,7 +12,7 @@ export interface NodeConfig {
 export const NODES: NodeConfig[] = [
   { id: 'node1', label: 'Node 1 (Consumer)', statusStreamUrl: 'http://localhost:5081/status/stream', raftId: 1 },
   { id: 'node2', label: 'Node 2 (Producer)', statusStreamUrl: 'http://localhost:5082/status/stream', raftId: 2 },
-  { id: 'node3', label: 'Node 3', statusStreamUrl: 'http://localhost:5083/status/stream', raftId: 3 },
+  { id: 'node3', label: 'Node 3 (Consumer)', statusStreamUrl: 'http://localhost:5083/status/stream', raftId: 3 },
 ];
 
 export function labelForRaftId(raftId: number | undefined): string | undefined {
