@@ -134,35 +134,77 @@ impl MqService for MqServiceImpl {
         // inbound stream so the client's Ack sends don't error out.
         tokio::spawn(async move { while inbound.next().await.is_some() {} });
 
-        let raft = self.raft.clone();
-        let peers = self.peers.clone();
-        let forward_channels = self.forward_channels.clone();
+        // A single Pop is one Raft round-trip, so pulling them one at a
+        // time from this stream capped a consumer's throughput at
+        // "however many round-trips fit in a second" - nowhere near
+        // enough to keep up with a high-rate producer. Instead, run
+        // several Pop loops concurrently per subscribed stream, all
+        // feeding the same outbound channel; the leader still applies
+        // each Pop as its own serialized Raft log entry (so delivery
+        // stays exactly-once per message), but many can be in flight at
+        // once instead of waiting on each other's round-trip.
+        const POP_CONCURRENCY: usize = 32;
+        let (tx, rx) = tokio::sync::mpsc::channel(POP_CONCURRENCY * 4);
 
-        let outbound = async_stream::stream! {
-            loop {
-                let propose_result = raft.client_write(QueueRequest::Pop { queue: queue_name.clone() }).await;
-                let popped = match propose_result {
-                    Ok(resp) => resp.data.popped,
-                    Err(RaftError::APIError(ClientWriteError::ForwardToLeader(fwd))) => {
-                        match fwd.leader_id.and_then(|id| peers.get(&id).map(|addr| (id, addr.clone()))) {
-                            Some((id, addr)) => match pop_via_forward(&forward_channels, id, &addr, &queue_name).await {
-                                Ok(popped) => popped,
-                                Err(_) => { tokio::time::sleep(Duration::from_millis(200)).await; continue; }
-                            },
-                            None => { tokio::time::sleep(Duration::from_millis(200)).await; continue; }
+        for _ in 0..POP_CONCURRENCY {
+            let raft = self.raft.clone();
+            let peers = self.peers.clone();
+            let forward_channels = self.forward_channels.clone();
+            let queue_name = queue_name.clone();
+            let tx = tx.clone();
+            tokio::spawn(async move {
+                loop {
+                    let propose_result = raft
+                        .client_write(QueueRequest::Pop {
+                            queue: queue_name.clone(),
+                        })
+                        .await;
+                    let popped = match propose_result {
+                        Ok(resp) => resp.data.popped,
+                        Err(RaftError::APIError(ClientWriteError::ForwardToLeader(fwd))) => {
+                            match fwd
+                                .leader_id
+                                .and_then(|id| peers.get(&id).map(|addr| (id, addr.clone())))
+                            {
+                                Some((id, addr)) => {
+                                    match pop_via_forward(&forward_channels, id, &addr, &queue_name)
+                                        .await
+                                    {
+                                        Ok(popped) => popped,
+                                        Err(_) => {
+                                            tokio::time::sleep(Duration::from_millis(200)).await;
+                                            continue;
+                                        }
+                                    }
+                                }
+                                None => {
+                                    tokio::time::sleep(Duration::from_millis(200)).await;
+                                    continue;
+                                }
+                            }
                         }
+                        Err(_) => {
+                            tokio::time::sleep(Duration::from_millis(200)).await;
+                            continue;
+                        }
+                    };
+
+                    match popped {
+                        Some((offset, payload)) => {
+                            if tx.send(Ok(ConsumeResponse { offset, payload })).await.is_err() {
+                                // Client disconnected - stop this worker.
+                                return;
+                            }
+                        }
+                        None => tokio::time::sleep(Duration::from_millis(150)).await,
                     }
-                    Err(_) => { tokio::time::sleep(Duration::from_millis(200)).await; continue; }
-                };
-
-                match popped {
-                    Some((offset, payload)) => yield Ok(ConsumeResponse { offset, payload }),
-                    None => tokio::time::sleep(Duration::from_millis(150)).await,
                 }
-            }
-        };
+            });
+        }
 
-        Ok(Response::new(Box::pin(outbound)))
+        Ok(Response::new(Box::pin(
+            tokio_stream::wrappers::ReceiverStream::new(rx),
+        )))
     }
 
     type WatchStatusStream = Pin<Box<dyn Stream<Item = Result<StatusUpdate, Status>> + Send>>;
