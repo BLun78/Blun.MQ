@@ -54,19 +54,40 @@ message StatusRequest {}
 message StatusUpdate {
   string node_id = 1;
   map<string, uint64> queue_depths = 2;
+  // Raft node id (0 = none elected yet) currently leading each of the
+  // cluster's two Raft groups - see RaftGroup below.
+  uint64 nodes_group_leader = 3;
+  uint64 queue_group_leader = 4;
 }
 
 // RaftRpc carries openraft's internal AppendEntries/Vote/InstallSnapshot
-// messages as opaque, serde-serialized envelopes between the 3 nodes of
-// the "spam" queue's Raft group. This crosses the same port as
-// MqService (both are registered on the same tonic server), since a
-// node's own address is also its Raft peer address.
+// messages as opaque, serde-serialized envelopes between the 3 nodes.
+// This crosses the same port as MqService (both are registered on the
+// same tonic server), since a node's own address is also its Raft peer
+// address.
+//
+// Each node actually runs two independent openraft::Raft instances, one
+// per RaftGroup, each with its own leader/log/WAL:
+//  - NODES: cluster membership/directory (which node ids exist and where
+//    they're reachable). Small, low-churn, replicated for its own sake.
+//  - SPAM: the "spam" queue's message data. High-churn, the actual
+//    workload. Keeping it in its own Raft group (and its own WAL,
+//    RaftEngineLogStore-backed at a separate directory) means queue
+//    traffic never contends with or gets held up by membership churn,
+//    and vice versa - a real benefit for a message-queue system where
+//    the two have very different write patterns.
 service RaftRpc {
   rpc AppendEntries(RaftEnvelope) returns (RaftEnvelope);
   rpc Vote(RaftEnvelope) returns (RaftEnvelope);
   rpc InstallSnapshot(RaftEnvelope) returns (RaftEnvelope);
 }
 
+enum RaftGroup {
+  NODES = 0;
+  SPAM = 1;
+}
+
 message RaftEnvelope {
   bytes payload = 1;
+  RaftGroup group = 2;
 }

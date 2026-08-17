@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::marker::PhantomData;
 use std::sync::Arc;
 
 use openraft::error::{InstallSnapshotError, NetworkError, RPCError, RaftError};
@@ -7,32 +8,40 @@ use openraft::raft::{
     AppendEntriesRequest, AppendEntriesResponse, InstallSnapshotRequest, InstallSnapshotResponse,
     VoteRequest, VoteResponse,
 };
-use openraft::BasicNode;
+use openraft::{BasicNode, RaftTypeConfig};
 use tonic::transport::Channel;
 
 use mq_proto::raft_rpc_client::RaftRpcClient;
-use mq_proto::RaftEnvelope;
-
-use crate::types::TypeConfig;
+use mq_proto::{RaftEnvelope, RaftGroup};
 
 /// Maps Raft node ids (1, 2, 3, ...) to the gRPC address every node
 /// already listens on for MqService - Raft RPCs are just another
 /// service multiplexed on that same port.
 pub type PeerAddresses = Arc<BTreeMap<u64, String>>;
 
+/// Generic over the Raft type config `C` so the same network wiring
+/// serves both of this crate's Raft groups; `group` tags every outgoing
+/// envelope so the receiving node's single `RaftRpc` gRPC service knows
+/// which of its two `openraft::Raft` instances to hand the RPC to.
 #[derive(Clone)]
-pub struct Network {
+pub struct Network<C> {
     peers: PeerAddresses,
+    group: RaftGroup,
+    _config: PhantomData<fn() -> C>,
 }
 
-impl Network {
-    pub fn new(peers: PeerAddresses) -> Self {
-        Self { peers }
+impl<C> Network<C> {
+    pub fn new(peers: PeerAddresses, group: RaftGroup) -> Self {
+        Self {
+            peers,
+            group,
+            _config: PhantomData,
+        }
     }
 }
 
-impl RaftNetworkFactory<TypeConfig> for Network {
-    type Network = NetworkConnection;
+impl<C: RaftTypeConfig<NodeId = u64, Node = BasicNode>> RaftNetworkFactory<C> for Network<C> {
+    type Network = NetworkConnection<C>;
 
     async fn new_client(&mut self, target: u64, _node: &BasicNode) -> Self::Network {
         let addr = self
@@ -49,31 +58,40 @@ impl RaftNetworkFactory<TypeConfig> for Network {
             .connect_lazy();
         NetworkConnection {
             client: RaftRpcClient::new(channel),
+            group: self.group,
+            _config: PhantomData,
         }
     }
 }
 
-pub struct NetworkConnection {
+pub struct NetworkConnection<C> {
     client: RaftRpcClient<Channel>,
+    group: RaftGroup,
+    _config: PhantomData<fn() -> C>,
 }
 
-fn to_rpc_err<E: std::error::Error + 'static>(
-    err: E,
-) -> RPCError<u64, BasicNode, RaftError<u64>> {
+fn to_rpc_err<E: std::error::Error + 'static>(err: E) -> RPCError<u64, BasicNode, RaftError<u64>> {
     RPCError::Network(NetworkError::new(&err))
 }
 
-impl RaftNetwork<TypeConfig> for NetworkConnection {
+impl<C: RaftTypeConfig<NodeId = u64, Node = BasicNode>> RaftNetwork<C> for NetworkConnection<C>
+where
+    AppendEntriesRequest<C>: serde::Serialize,
+    InstallSnapshotRequest<C>: serde::Serialize,
+{
     async fn append_entries(
         &mut self,
-        rpc: AppendEntriesRequest<TypeConfig>,
+        rpc: AppendEntriesRequest<C>,
         _option: RPCOption,
     ) -> Result<AppendEntriesResponse<u64>, RPCError<u64, BasicNode, RaftError<u64>>> {
         let payload = serde_json::to_vec(&rpc).expect("serializable");
         let resp = self
             .client
             .clone()
-            .append_entries(RaftEnvelope { payload })
+            .append_entries(RaftEnvelope {
+                payload,
+                group: self.group as i32,
+            })
             .await
             .map_err(to_rpc_err)?;
         Ok(serde_json::from_slice(&resp.into_inner().payload).expect("deserializable"))
@@ -88,7 +106,10 @@ impl RaftNetwork<TypeConfig> for NetworkConnection {
         let resp = self
             .client
             .clone()
-            .vote(RaftEnvelope { payload })
+            .vote(RaftEnvelope {
+                payload,
+                group: self.group as i32,
+            })
             .await
             .map_err(to_rpc_err)?;
         Ok(serde_json::from_slice(&resp.into_inner().payload).expect("deserializable"))
@@ -96,15 +117,20 @@ impl RaftNetwork<TypeConfig> for NetworkConnection {
 
     async fn install_snapshot(
         &mut self,
-        rpc: InstallSnapshotRequest<TypeConfig>,
+        rpc: InstallSnapshotRequest<C>,
         _option: RPCOption,
-    ) -> Result<InstallSnapshotResponse<u64>, RPCError<u64, BasicNode, RaftError<u64, InstallSnapshotError>>>
-    {
+    ) -> Result<
+        InstallSnapshotResponse<u64>,
+        RPCError<u64, BasicNode, RaftError<u64, InstallSnapshotError>>,
+    > {
         let payload = serde_json::to_vec(&rpc).expect("serializable");
         let resp = self
             .client
             .clone()
-            .install_snapshot(RaftEnvelope { payload })
+            .install_snapshot(RaftEnvelope {
+                payload,
+                group: self.group as i32,
+            })
             .await
             .map_err(|e| RPCError::Network(NetworkError::new(&e)))?;
         Ok(serde_json::from_slice(&resp.into_inner().payload).expect("deserializable"))

@@ -5,11 +5,15 @@ export interface NodeStatus {
   config: NodeConfig;
   connected: boolean;
   queueDepths: Record<string, number>;
+  nodesGroupLeader?: number;
+  queueGroupLeader?: number;
 }
 
 interface StatusUpdatePayload {
   node_id: string;
   queue_depths: Record<string, number>;
+  nodes_group_leader?: number;
+  queue_group_leader?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +37,12 @@ export class NodeStatusService {
     source.onerror = () => this.patch(config.id, { connected: false });
     source.onmessage = (event) => {
       const payload: StatusUpdatePayload = JSON.parse(event.data);
-      this.patch(config.id, { connected: true, queueDepths: payload.queue_depths });
+      this.patch(config.id, {
+        connected: true,
+        queueDepths: payload.queue_depths,
+        nodesGroupLeader: payload.nodes_group_leader,
+        queueGroupLeader: payload.queue_group_leader,
+      });
     };
   }
 

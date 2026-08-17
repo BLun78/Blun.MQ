@@ -11,14 +11,15 @@ use tonic::{Request, Response, Status, Streaming};
 
 use mq_proto::mq_service_client::MqServiceClient;
 use mq_proto::{
-    consume_request::Kind, mq_service_server::MqService, ConsumeRequest, ConsumeResponse,
-    PublishRequest, PublishResponse, StatusRequest, StatusUpdate, Subscribe,
+    ConsumeRequest, ConsumeResponse, PublishRequest, PublishResponse, StatusRequest, StatusUpdate,
+    Subscribe, consume_request::Kind, mq_service_server::MqService,
 };
 use mq_raft::{QueueRequest, QueueState};
 
 pub struct MqServiceImpl {
     pub node_id: String,
-    pub raft: mq_raft::Raft,
+    pub raft: mq_raft::QueueRaft,
+    pub node_raft: mq_raft::NodeRaft,
     pub state: Arc<std::sync::Mutex<QueueState>>,
     /// Node id -> gRPC address, used to forward writes to whoever is
     /// currently the "spam" partition's Raft leader.
@@ -173,12 +174,22 @@ impl MqService for MqServiceImpl {
         let state = self.state.clone();
         let node_id = self.node_id.clone();
 
+        let node_raft = self.node_raft.clone();
+        let queue_raft = self.raft.clone();
+
         let outbound = async_stream::stream! {
             let mut interval = tokio::time::interval(Duration::from_millis(500));
             loop {
                 interval.tick().await;
                 let queue_depths = state.lock().unwrap().depths();
-                yield Ok(StatusUpdate { node_id: node_id.clone(), queue_depths });
+                let nodes_group_leader = node_raft.current_leader().await.unwrap_or_default();
+                let queue_group_leader = queue_raft.current_leader().await.unwrap_or_default();
+                yield Ok(StatusUpdate {
+                    node_id: node_id.clone(),
+                    queue_depths,
+                    nodes_group_leader,
+                    queue_group_leader,
+                });
             }
         };
 

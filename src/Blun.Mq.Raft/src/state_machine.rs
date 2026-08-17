@@ -8,7 +8,7 @@ use openraft::{
     StoredMembership,
 };
 
-use crate::types::{QueueRequest, QueueResponse, TypeConfig};
+use crate::types::{QueueRequest, QueueResponse, QueueTypeConfig};
 
 /// The queue state every replica converges on. Shared (via `Arc<Mutex<_>>`)
 /// with the node's gRPC/HTTP layers so status reads never have to go
@@ -86,8 +86,8 @@ impl StateMachineStore {
     }
 }
 
-impl RaftSnapshotBuilder<TypeConfig> for StateMachineStore {
-    async fn build_snapshot(&mut self) -> Result<Snapshot<TypeConfig>, StorageError<u64>> {
+impl RaftSnapshotBuilder<QueueTypeConfig> for StateMachineStore {
+    async fn build_snapshot(&mut self) -> Result<Snapshot<QueueTypeConfig>, StorageError<u64>> {
         let payload = {
             let state = self.state.lock().unwrap();
             SnapshotPayload {
@@ -129,19 +129,24 @@ fn uuid_like_id() -> String {
     )
 }
 
-impl RaftStateMachine<TypeConfig> for StateMachineStore {
+impl RaftStateMachine<QueueTypeConfig> for StateMachineStore {
     type SnapshotBuilder = Self;
 
     async fn applied_state(
         &mut self,
-    ) -> Result<(Option<LogId<u64>>, StoredMembership<u64, openraft::BasicNode>), StorageError<u64>>
-    {
+    ) -> Result<
+        (
+            Option<LogId<u64>>,
+            StoredMembership<u64, openraft::BasicNode>,
+        ),
+        StorageError<u64>,
+    > {
         Ok((self.last_applied, self.last_membership.clone()))
     }
 
     async fn apply<I>(&mut self, entries: I) -> Result<Vec<QueueResponse>, StorageError<u64>>
     where
-        I: IntoIterator<Item = Entry<TypeConfig>> + OptionalSend,
+        I: IntoIterator<Item = Entry<QueueTypeConfig>> + OptionalSend,
         I::IntoIter: OptionalSend,
     {
         let mut responses = Vec::new();
@@ -192,7 +197,9 @@ impl RaftStateMachine<TypeConfig> for StateMachineStore {
                 .map(|(k, v)| {
                     (
                         k,
-                        v.into_iter().map(|(o, p)| (o, bytes::Bytes::from(p))).collect(),
+                        v.into_iter()
+                            .map(|(o, p)| (o, bytes::Bytes::from(p)))
+                            .collect(),
                     )
                 })
                 .collect();
@@ -209,7 +216,9 @@ impl RaftStateMachine<TypeConfig> for StateMachineStore {
         Ok(())
     }
 
-    async fn get_current_snapshot(&mut self) -> Result<Option<Snapshot<TypeConfig>>, StorageError<u64>> {
+    async fn get_current_snapshot(
+        &mut self,
+    ) -> Result<Option<Snapshot<QueueTypeConfig>>, StorageError<u64>> {
         Ok(self.snapshot.as_ref().map(|s| Snapshot {
             meta: s.meta.clone(),
             snapshot: Box::new(Cursor::new(s.data.clone())),
