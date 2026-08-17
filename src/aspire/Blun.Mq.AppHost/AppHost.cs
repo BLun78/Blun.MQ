@@ -43,6 +43,16 @@ var consumer = builder.AddExecutable("consumer", "cargo", rustWorkspaceRoot,
     .WithEnvironment("MQ_QUEUE", "spam")
     .WaitFor(node1);
 
+// Second demo consumer, connected to node 3 instead - competing consumer
+// for the same "spam" queue, demonstrating that Pop is safe across
+// consumers connected to different nodes (each Pop is a Raft proposal,
+// so only one of the two ever gets a given message).
+var consumer2 = builder.AddExecutable("consumer2", "cargo", rustWorkspaceRoot,
+        "run", "--bin", "mq-demo-consumer")
+    .WithEnvironment("MQ_NODE_ADDR", "http://localhost:5003")
+    .WithEnvironment("MQ_QUEUE", "spam")
+    .WaitFor(node3);
+
 // Angular SPA dashboard: shows the "spam" queue depth across all 3 nodes.
 // Node status endpoints are fixed localhost ports for this local demo
 // scenario (see src/spa/src/app/nodes.config.ts).

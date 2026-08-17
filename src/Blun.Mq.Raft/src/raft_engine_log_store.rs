@@ -40,6 +40,7 @@ const REGION_ID: u64 = 1;
 
 const VOTE_KEY: &[u8] = b"vote";
 const LAST_PURGED_KEY: &[u8] = b"last_purged";
+const COMMITTED_KEY: &[u8] = b"committed";
 
 #[derive(Clone)]
 struct BlobEntry;
@@ -208,6 +209,38 @@ where
         .await
         .map_err(to_storage_err)?
         .map_err(to_storage_err)
+    }
+
+    // openraft's default RaftLogStorage::save_committed/read_committed are
+    // no-ops that always return None - fine as long as nothing else is
+    // persisted, but we *do* persist `purge()`'s last-purged log id, and
+    // openraft's startup validation requires `purge_upto <= committed`.
+    // Leaving committed un-persisted meant every restart after a purge
+    // panicked ("purge_upto <= committed(None)" invariant violation), so
+    // it has to be tracked durably here too, the same way vote is.
+    async fn save_committed(&mut self, committed: Option<LogId<u64>>) -> Result<(), StorageError<u64>> {
+        let data = serde_json::to_vec(&committed).map_err(to_storage_err)?;
+        let mut blob = Blob::new();
+        blob.set_data(data);
+
+        let engine = self.engine.clone();
+        tokio::task::spawn_blocking(move || {
+            let mut batch = LogBatch::default();
+            batch.put_message(REGION_ID, COMMITTED_KEY.to_vec(), &blob)?;
+            engine.write(&mut batch, true)?;
+            Ok::<_, raft_engine::Error>(())
+        })
+        .await
+        .map_err(to_storage_err)?
+        .map_err(to_storage_err)
+    }
+
+    async fn read_committed(&mut self) -> Result<Option<LogId<u64>>, StorageError<u64>> {
+        self.get_blob_message(COMMITTED_KEY)?
+            .map(|blob| serde_json::from_slice(blob.get_data()))
+            .transpose()
+            .map_err(to_storage_err)
+            .map(|opt: Option<Option<LogId<u64>>>| opt.flatten())
     }
 
     async fn read_vote(&mut self) -> Result<Option<Vote<u64>>, StorageError<u64>> {
