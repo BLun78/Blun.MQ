@@ -26,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
         let addr = addr.clone();
         let queue = queue.clone();
         handles.push(tokio::spawn(async move {
-            let mut client = MqClient::connect(addr).await.expect("connect");
+            let mut client = MqClient::connect(addr).expect("connect");
             for i in 0..per_task {
                 let payload = format!("bench-{task_id}-{i}").into_bytes();
                 client.publish(&queue, payload).await.expect("publish");

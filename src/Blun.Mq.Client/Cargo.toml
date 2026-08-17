@@ -10,3 +10,4 @@ tonic = { workspace = true }
 bytes = { workspace = true }
 tokio-stream = { workspace = true }
 anyhow = { workspace = true }
+thiserror = { workspace = true }

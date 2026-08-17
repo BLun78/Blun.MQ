@@ -23,23 +23,15 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|_| "200".into())
         .parse()?;
 
-    tracing::info!(addr, queue, rate, concurrency, "producer connecting");
-    // Aspire's WaitFor only guarantees the target process has started,
-    // not that its gRPC server is already accepting connections (no
-    // health check is wired up), so retry the initial connect.
-    // One connection, cloned per publish task below: tonic's client wraps
-    // a Channel handle that's cheap to clone and reuses the underlying
-    // HTTP/2 connection, so this doesn't dial per-message (see mq-raft's
-    // Network and mq-node's forward() for the bug this pattern avoids).
-    let client = loop {
-        match MqClient::connect(addr.clone()).await {
-            Ok(client) => break client,
-            Err(err) => {
-                tracing::warn!(%err, "connect failed, retrying");
-                tokio::time::sleep(Duration::from_millis(500)).await;
-            }
-        }
-    };
+    tracing::info!(addr, queue, rate, concurrency, "producer starting");
+    // One lazy connection, cloned per publish task below: tonic's client
+    // wraps a Channel handle that's cheap to clone and reuses the
+    // underlying HTTP/2 connection (established on first use), so this
+    // doesn't dial per-message (see mq-raft's Network and mq-node's
+    // forward() for the bug this pattern avoids). Publish failures while
+    // the target node is still starting up are handled per-attempt below
+    // rather than blocking startup on an eager connect.
+    let client = MqClient::connect(addr.clone())?;
 
     let sent = Arc::new(AtomicU64::new(0));
     let failed = Arc::new(AtomicU64::new(0));
