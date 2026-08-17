@@ -2,6 +2,9 @@
 /target/
 **/target/
 
+# mq-node raft-engine WAL data (MQ_DATA_DIR)
+/data/
+
 # .NET
 bin/
 obj/

@@ -29,6 +29,27 @@
         } @else {
           <div class="text-slate-500 text-sm py-6 text-center">waiting for connection…</div>
         }
+
+        <div class="flex flex-col gap-1.5 mt-2 pt-4 border-t border-slate-800 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Nodes-Raft Leader</span>
+            <span
+              class="font-medium"
+              [class.text-amber-400]="status.value.nodesGroupLeader === status.value.config.raftId"
+            >
+              {{ labelForRaftId(status.value.nodesGroupLeader) ?? '—' }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Spam-Raft Leader</span>
+            <span
+              class="font-medium"
+              [class.text-amber-400]="status.value.queueGroupLeader === status.value.config.raftId"
+            >
+              {{ labelForRaftId(status.value.queueGroupLeader) ?? '—' }}
+            </span>
+          </div>
+        </div>
       </article>
     }
   </section>
