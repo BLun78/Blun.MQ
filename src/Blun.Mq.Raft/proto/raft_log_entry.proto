@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package mq_raft_engine;
+
+// Generic envelope raft-engine stores per Raft log index. `data` carries a
+// serde_json-encoded openraft::Entry<TypeConfig> (for log entries) or an
+// openraft Vote/LogId (for the vote/last-purged keys) - raft-engine only
+// needs `index` to place the record, everything else is opaque to it.
+message Blob {
+    uint64 index = 1;
+    bytes data = 2;
+}

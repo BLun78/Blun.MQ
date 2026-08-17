@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use mq_proto::mq_service_server::MqServiceServer;
 use mq_proto::raft_rpc_server::RaftRpcServer;
-use mq_raft::{LogStore, Network, QueueState, StateMachineStore};
+use mq_raft::{Network, QueueState, RaftEngineLogStore, StateMachineStore};
 use tracing_subscriber::EnvFilter;
 
 use grpc::MqServiceImpl;
@@ -23,7 +23,10 @@ fn parse_peers(s: &str) -> BTreeMap<u64, String> {
             let (id, addr) = part
                 .split_once('=')
                 .unwrap_or_else(|| panic!("invalid MQ_PEERS entry: {part}"));
-            (id.trim().parse().expect("peer id must be a u64"), addr.trim().to_string())
+            (
+                id.trim().parse().expect("peer id must be a u64"),
+                addr.trim().to_string(),
+            )
         })
         .collect()
 }
@@ -44,16 +47,22 @@ async fn main() -> anyhow::Result<()> {
     let http_addr: SocketAddr = std::env::var("MQ_HTTP_ADDR")
         .unwrap_or_else(|_| "0.0.0.0:5080".to_string())
         .parse()?;
-    let peers = parse_peers(&std::env::var("MQ_PEERS").unwrap_or_else(|_| {
-        format!("1=http://localhost:{}", grpc_addr.port())
-    }));
+    let peers = parse_peers(
+        &std::env::var("MQ_PEERS")
+            .unwrap_or_else(|_| format!("1=http://localhost:{}", grpc_addr.port())),
+    );
     let peers = Arc::new(peers);
+    let data_dir = std::env::var("MQ_DATA_DIR").unwrap_or_else(|_| format!("./data/{node_id}"));
 
-    tracing::info!(node_id, node_num, %grpc_addr, %http_addr, ?peers, "starting mq-node");
+    tracing::info!(node_id, node_num, %grpc_addr, %http_addr, ?peers, data_dir, "starting mq-node");
 
     // --- Raft wiring for the "spam" partition's Raft group ---
     let queue_state = Arc::new(Mutex::new(QueueState::default()));
-    let log_store = LogStore::default();
+    // raft-engine gives us a durable, segmented WAL for the Raft log, so the
+    // log (and the vote) survive a node restart - only the applied
+    // QueueState above is still in-memory and gets rebuilt by replaying the
+    // log on startup, same as any Raft-backed state machine.
+    let log_store = RaftEngineLogStore::open(data_dir)?;
     let state_machine = StateMachineStore::new(queue_state.clone());
     let network = Network::new(peers.clone());
     let raft = mq_raft::Raft::new(

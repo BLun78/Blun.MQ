@@ -13,3 +13,10 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 tracing = { workspace = true }
 async-trait = "0.1"
+raft-engine = { workspace = true }
+protobuf = { workspace = true }
+anyerror = "0.1"
+anyhow = { workspace = true }
+
+[build-dependencies]
+protobuf-codegen-pure = "=2.28"

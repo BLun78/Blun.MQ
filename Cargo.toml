@@ -28,3 +28,5 @@ tokio-stream = "0.1"
 async-stream = "0.3"
 tower-http = { version = "0.5", features = ["cors"] }
 openraft = { version = "0.9", features = ["serde", "storage-v2"] }
+raft-engine = "0.4"
+protobuf = "=2.28"
