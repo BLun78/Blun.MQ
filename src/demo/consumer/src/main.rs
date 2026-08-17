@@ -12,11 +12,12 @@ async fn main() -> anyhow::Result<()> {
     // In the Aspire scenario the consumer connects to node 1.
     let addr = std::env::var("MQ_NODE_ADDR").unwrap_or_else(|_| "http://127.0.0.1:5001".into());
     let queue = std::env::var("MQ_QUEUE").unwrap_or_else(|_| "spam".into());
-    // Each Consume RPC runs its own sequential Pop-proposal loop
-    // server-side (see mq-node's grpc.rs), so a single stream tops out
-    // around the same few-hundred msg/s a sequential producer does.
-    // Opening several concurrent streams parallelizes pop throughput the
-    // same way the producer's concurrency pool parallelizes publishes.
+    // Each Consume RPC already runs several concurrent Pop-proposal
+    // workers server-side (see mq-node's grpc.rs), but opening several
+    // concurrent streams here too further parallelizes pop throughput,
+    // the same way the producer's concurrency pool parallelizes
+    // publishes - useful once a single client's own gRPC handling
+    // becomes the bottleneck rather than the server's Raft round-trips.
     let concurrency: usize = std::env::var("MQ_CONSUMER_CONCURRENCY")
         .unwrap_or_else(|_| "8".into())
         .parse()?;
